@@ -2,6 +2,7 @@ stable:
   image: rust:1-slim
   script:
     - cargo test
+    - rustup component add rustfmt
     - cargo fmt -- --check
 
 nightly:
