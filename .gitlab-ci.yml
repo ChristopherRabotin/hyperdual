@@ -1,0 +1,12 @@
+stable:
+  image: rust:1-slim
+  script:
+    - cargo test
+    - cargo fmt -- --check
+  allow_failure:  true
+
+nightly:
+  image: rustlang/rust:nightly
+  script:
+    - cargo test
+  allow_failure:  true

@@ -1,4 +1,4 @@
-dual_num [![Build Status](https://travis-ci.org/novacrazy/dual_num.svg?branch=master)](https://travis-ci.org/novacrazy/dual_num)
+hyperdual [Build Status](https://gitlab.com/chrisrabotin/hyperdual/badges/branch/build.svg?branch=master)
 ========
 
 Fully-featured Dual Number implementation with features for automatic differentiation of multivariate vectorial functions into gradients.
@@ -6,9 +6,9 @@ Fully-featured Dual Number implementation with features for automatic differenti
 ## Usage
 
 ```rust
-extern crate dual_num;
+extern crate hyperdual;
 
-use dual_num::{Dual, Hyperdual, Float, differentiate, U3};
+use hyperdual::{Dual, Hyperdual, Float, differentiate, U3};
 
 fn main() {
     // find partial derivative at x=4.0

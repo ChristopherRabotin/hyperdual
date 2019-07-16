@@ -5,9 +5,9 @@
 //! ## Usage
 //!
 //! ```rust
-//! extern crate dual_num;
+//! extern crate hyperdual;
 //!
-//! use dual_num::{Dual, Hyperdual, Float, differentiate, U3};
+//! use hyperdual::{Dual, Hyperdual, Float, differentiate, U3};
 //!
 //! fn main() {
 //!     // find partial derivative at x=4.0
