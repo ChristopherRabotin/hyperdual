@@ -1,4 +1,4 @@
-hyperdual [Build Status](https://gitlab.com/chrisrabotin/hyperdual/badges/branch/build.svg?branch=master)
+hyperdual ![Build Status](https://gitlab.com/chrisrabotin/hyperdual/badges/branch/build.svg?branch=master)
 ========
 
 Fully-featured Dual Number implementation with features for automatic differentiation of multivariate vectorial functions into gradients.
@@ -27,6 +27,7 @@ fn main() {
 ```
 
 ##### Previous Work
+* [https://github.com/novacrazy/dual_num](https://github.com/novacrazy/dual_num)
 * [https://github.com/FreeFull/dual_numbers](https://github.com/FreeFull/dual_numbers)
 * [https://github.com/ibab/rust-ad](https://github.com/ibab/rust-ad)
 * [https://github.com/tesch1/cxxduals](https://github.com/tesch1/cxxduals)
