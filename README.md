@@ -1,4 +1,4 @@
-hyperdual ![Build Status](https://gitlab.com/chrisrabotin/hyperdual/badges/branch/build.svg?branch=master)
+hyperdual ![Build Status](https://gitlab.com/chrisrabotin/hyperdual/badges/master/pipeline.svg)
 ========
 
 Fully-featured Dual Number implementation with features for automatic differentiation of multivariate vectorial functions into gradients.
