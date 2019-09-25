@@ -1,7 +1,7 @@
 extern crate hyperdual;
 extern crate nalgebra as na;
 
-use na::{Matrix2x6, Matrix6, Vector2, Vector3, Vector6, VectorN, MatrixN, U2, U3, U6, U7};
+use na::{Matrix2x6, Matrix6, MatrixN, Vector2, Vector3, Vector6, VectorN, U2, U3, U6, U7};
 
 use hyperdual::linalg::norm;
 use hyperdual::{
@@ -178,12 +178,12 @@ fn multivariate() {
 #[test]
 fn state_gradient() {
     // This is an example of the equation of motion gradient for a spacecrate in a two body acceleration.
-    
+
     type StateVectorType = VectorN<f64, U6>;
     type JacobianType = MatrixN<f64, U6>;
     type StateVectorDualType = VectorN<DualN<f64, U7>, U6>;
     type EomFn<T> = fn(f64, &T) -> T;
-    
+
     fn eom(_t: f64, state: &StateVectorDualType) -> StateVectorDualType {
         // Extract data from hyperspace
         let radius = state.fixed_rows::<U3>(0).into_owned();
@@ -207,10 +207,7 @@ fn state_gradient() {
             body_acceleration[2],
         )
     }
-    fn eom_with_grad
-        (eom: &EomFn<StateVectorDualType>, _t: f64, state: &StateVectorDualType) -> 
-        (StateVectorType, JacobianType)
-    {
+    fn eom_with_grad(eom: &EomFn<StateVectorDualType>, _t: f64, state: &StateVectorDualType) -> (StateVectorType, JacobianType) {
         let f_dual = eom(0.0, &state);
         // Extract result into Vector6 and Matrix6
         extract_jacobian_and_result(&f_dual)
@@ -232,7 +229,7 @@ fn state_gradient() {
     println!("hyperstate = {}", hyperstate);
 
     // Extract result into Vector6 and Matrix6
-    let (fx, grad)  = eom_with_grad(&(eom as EomFn<StateVectorDualType>), 0.0, &hyperstate);
+    let (fx, grad) = eom_with_grad(&(eom as EomFn<StateVectorDualType>), 0.0, &hyperstate);
 
     let expected_fx = Vector6::new(
         -3.28878900377057,
@@ -289,10 +286,7 @@ fn state_partials() {
         // Extract result into Vector2 and Matrix2x6
         // let mut fx = Vector2::zeros();
         // let mut pmat = Matrix2x6::zeros();
-        let fx = Vector2::new(
-            range,
-            range_rate
-        );
+        let fx = Vector2::new(range, range_rate);
         // for i in 0..U2::dim() {
         //     fx[i] = if i == 0 { range.real() } else { range_rate.real() };
         //     for j in 1..U7::dim() {
@@ -303,10 +297,7 @@ fn state_partials() {
         // (fx, pmat)
     }
 
-    fn sensitivity_with_partials
-        (eom: &SensitivityFn, state: &StateVectorDualType) -> 
-        (OutputVectorType, JacobianType)
-    {
+    fn sensitivity_with_partials(eom: &SensitivityFn, state: &StateVectorDualType) -> (OutputVectorType, JacobianType) {
         let f_dual = eom(&state);
         extract_jacobian_and_result(&f_dual)
     }
