@@ -1,10 +1,12 @@
 extern crate hyperdual;
 extern crate nalgebra as na;
 
-use na::{Matrix2x6, Matrix6, Vector2, Vector3, Vector6, VectorN, U2, U3, U6, U7};
+use na::{Matrix2x6, Matrix6, Vector2, Vector3, Vector6, VectorN, MatrixN, U2, U3, U6, U7};
 
 use hyperdual::linalg::norm;
-use hyperdual::{differentiate, hyperspace_from_vector, vector_from_hyperspace, DimName, Dual, DualN, Float, FloatConst, Hyperdual};
+use hyperdual::{
+    differentiate, get_jacobian_and_result, hyperspace_from_vector, vector_from_hyperspace, DimName, Dual, DualN, Float, FloatConst, Hyperdual,
+};
 
 macro_rules! abs_within {
     ($x:expr, $val:expr, $eps:expr, $msg:expr) => {
@@ -176,7 +178,7 @@ fn multivariate() {
 #[test]
 fn state_gradient() {
     // This is an example of the equation of motion gradient for a spacecrate in a two body acceleration.
-    fn eom(_t: f64, state: &VectorN<Hyperdual<f64, U7>, U6>) -> (Vector6<f64>, Matrix6<f64>) {
+    fn eom(_t: f64, state: &VectorN<Hyperdual<f64, U7>, U6>) -> VectorN<Hyperdual<f64, U7>, U6> {
         // Extract data from hyperspace
         let radius = state.fixed_rows::<U3>(0).into_owned();
         let velocity = state.fixed_rows::<U3>(3).into_owned();
@@ -189,17 +191,23 @@ fn state_gradient() {
         println!("velocity = {}", velocity);
         println!("body_acceleration = {}", body_acceleration);
 
+        // Return only the EOMs
+        Vector6::new(
+            velocity[0],
+            velocity[1],
+            velocity[2],
+            body_acceleration[0],
+            body_acceleration[1],
+            body_acceleration[2],
+        )
+    }
+    fn eom_with_stm<F>(eom: &F, _t: f64, state: &VectorN<DualN<f64, U7>, U6>) -> 
+        (VectorN<f64, U6>, MatrixN<f64, U6>)
+        where F: Fn(f64, &VectorN<DualN<f64, U7>, U6>) -> VectorN<DualN<f64, U7>, U6> 
+    {
+        let f_dual = eom(0.0, &state);
         // Extract result into Vector6 and Matrix6
-        let mut fx = Vector6::zeros();
-        let mut grad = Matrix6::zeros();
-        for i in 0..U6::dim() {
-            fx[i] = if i < 3 { velocity[i].real() } else { body_acceleration[i - 3].real() };
-            for j in 1..U7::dim() {
-                grad[(i, j - 1)] = if i < 3 { velocity[i][j] } else { body_acceleration[i - 3][j] };
-            }
-        }
-
-        (fx, grad)
+        get_jacobian_and_result(&f_dual)
     }
 
     let state = Vector6::new(
@@ -216,8 +224,9 @@ fn state_gradient() {
 
     // Added for inspection
     println!("hyperstate = {}", hyperstate);
-
-    let (fx, grad) = eom(0.0, &hyperstate);
+    
+    // Extract result into Vector6 and Matrix6
+    let (fx, grad)  = eom_with_stm(&eom, 0.0, &hyperstate);
 
     let expected_fx = Vector6::new(
         -3.28878900377057,
