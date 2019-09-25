@@ -1,7 +1,7 @@
 use super::Float;
 use na::allocator::Allocator;
 use na::{DefaultAllocator, Dim, DimName};
-use na::{MatrixN, VectorN};
+use na::{MatrixMN, VectorN};
 use {Dual, DualN, One, Scalar, Zero};
 
 /// Evaluates the function using dual numbers to get the partial derivative at the input point
@@ -14,18 +14,25 @@ where
 }
 
 #[inline]
-pub fn get_jacobian_and_result<T: Scalar + Zero + Float, DimX: Dim + DimName, DimY: Dim + DimName>(
-    fx_dual: &VectorN<DualN<T, DimY>, DimX>,
-) -> (VectorN<T, DimX>, MatrixN<T, DimX>)
+pub fn get_jacobian_and_result<T: Scalar + Zero + Float, 
+                               DimInputs: Dim + DimName,
+                               DimOutputs: Dim + DimName,
+                               DimDual: Dim + DimName>
+        (fx_dual: &VectorN<DualN<T, DimDual>, DimOutputs>) 
+            -> (VectorN<T, DimOutputs>, MatrixMN<T, DimOutputs, DimInputs>)
 where
-    DefaultAllocator: Allocator<T, DimX> + Allocator<T, DimX, DimX> + Allocator<DualN<T, DimY>, DimX> + Allocator<T, DimY>,
-    <DefaultAllocator as Allocator<T, DimY>>::Buffer: Copy,
+    DefaultAllocator: Allocator<T, DimInputs> 
+            + Allocator<T, DimOutputs> 
+            + Allocator<T, DimOutputs, DimInputs> 
+            + Allocator<DualN<T, DimDual>, DimOutputs> 
+            + Allocator<T, DimDual>,
+    <DefaultAllocator as Allocator<T, DimDual>>::Buffer: Copy,
 {
     let fx = super::vector_from_hyperspace(&fx_dual);
-    let mut grad = MatrixN::<T, DimX>::zeros();
+    let mut grad =  MatrixMN::<T, DimOutputs, DimInputs>::zeros();
 
-    for i in 0..DimX::dim() {
-        for j in 0..DimX::dim() {
+    for i in 0..DimOutputs::dim() {
+        for j in 0..DimInputs::dim() {
             grad[(i, j)] = fx_dual[i][j + 1];
         }
     }
