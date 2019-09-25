@@ -13,8 +13,10 @@ where
     f(Dual::new(x, T::one())).dual()
 }
 
+
+// Extracts Jacobian matrix and function value from a vector of dual numbers
 #[inline]
-pub fn get_jacobian_and_result<T: Scalar + Zero + Float, 
+pub fn extract_jacobian_and_result<T: Scalar + Zero + Float, 
                                DimInputs: Dim + DimName,
                                DimOutputs: Dim + DimName,
                                DimDual: Dim + DimName>

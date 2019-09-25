@@ -5,7 +5,7 @@ use na::{Matrix2x6, Matrix6, Vector2, Vector3, Vector6, VectorN, MatrixN, U2, U3
 
 use hyperdual::linalg::norm;
 use hyperdual::{
-    differentiate, get_jacobian_and_result, hyperspace_from_vector, vector_from_hyperspace, DimName, Dual, DualN, Float, FloatConst, Hyperdual,
+    differentiate, extract_jacobian_and_result, hyperspace_from_vector, vector_from_hyperspace, DimName, Dual, DualN, Float, FloatConst, Hyperdual,
 };
 
 macro_rules! abs_within {
@@ -214,7 +214,7 @@ fn state_gradient() {
     {
         let f_dual = eom(0.0, &state);
         // Extract result into Vector6 and Matrix6
-        get_jacobian_and_result(&f_dual)
+        extract_jacobian_and_result(&f_dual)
     }
 
     let state = Vector6::new(
@@ -233,7 +233,7 @@ fn state_gradient() {
     println!("hyperstate = {}", hyperstate);
 
     // Extract result into Vector6 and Matrix6
-    let (fx, grad)  = eom_with_grad(&eom, 0.0, &hyperstate);
+    let (fx, grad)  = eom_with_grad(&(eom as EomFn<StateVectorDualType>), 0.0, &hyperstate);
 
     let expected_fx = Vector6::new(
         -3.28878900377057,
