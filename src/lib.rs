@@ -1206,12 +1206,12 @@ where
     VectorN::<Hyperdual<T, D>, N>::from_row_slice(&space_slice)
 }
 
-pub fn vector_from_hyperspace<T: Scalar + Zero + Float, DimX: Dim + DimName, DimY: Dim + DimName>(
-    x_dual: &VectorN<DualN<T, DimY>, DimX>,
-) -> VectorN<T, DimX>
+pub fn vector_from_hyperspace<T: Scalar + Zero + Float, DimVector: Dim + DimName, DimHyper: Dim + DimName>(
+    x_dual: &VectorN<DualN<T, DimHyper>, DimVector>,
+) -> VectorN<T, DimVector>
 where
-    DefaultAllocator: Allocator<T, DimX> + Allocator<DualN<T, DimY>, DimX> + Allocator<T, DimY>,
-    <DefaultAllocator as Allocator<T, DimY>>::Buffer: Copy,
+    DefaultAllocator: Allocator<T, DimVector> + Allocator<DualN<T, DimHyper>, DimVector> + Allocator<T, DimHyper>,
+    <DefaultAllocator as Allocator<T, DimHyper>>::Buffer: Copy,
 {
     x_dual.map(|x| x.real())
 }
