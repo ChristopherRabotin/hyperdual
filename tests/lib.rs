@@ -5,7 +5,7 @@ use na::{Matrix2x6, Matrix6, Vector2, Vector3, Vector6, VectorN, MatrixN, U2, U3
 
 use hyperdual::linalg::norm;
 use hyperdual::{
-    differentiate, extract_jacobian_and_result, hyperspace_from_vector, vector_from_hyperspace, DimName, Dual, DualN, Float, FloatConst, Hyperdual,
+    differentiate, extract_jacobian_and_result, hyperspace_from_vector, vector_from_hyperspace, Dual, DualN, Float, FloatConst, Hyperdual,
 };
 
 macro_rules! abs_within {
@@ -207,7 +207,6 @@ fn state_gradient() {
             body_acceleration[2],
         )
     }
-    // fn eom_with_grad<F: Fn(f64, &StateVectorDualType) -> StateVectorDualType>
     fn eom_with_grad
         (eom: &EomFn<StateVectorDualType>, _t: f64, state: &StateVectorDualType) -> 
         (StateVectorType, JacobianType)
@@ -266,8 +265,14 @@ fn state_gradient() {
 
 #[test]
 fn state_partials() {
+    type OutputVectorType = Vector2<f64>;
+    type JacobianType = Matrix2x6<f64>;
+    type StateVectorDualType = VectorN<Hyperdual<f64, U7>, U6>;
+    type OutputVectorDualType = VectorN<Hyperdual<f64, U7>, U2>;
+    type SensitivityFn = fn(&StateVectorDualType) -> OutputVectorDualType;
+
     // This is an example of the sensitivity matrix (H tilde) of a ranging method.
-    fn sensitivity(state: &VectorN<Hyperdual<f64, U7>, U6>) -> (Vector2<f64>, Matrix2x6<f64>) {
+    fn sensitivity(state: &StateVectorDualType) -> OutputVectorDualType {
         // Extract data from hyperspace
         let range_vec = state.fixed_rows::<U3>(0).into_owned();
         let velocity_vec = state.fixed_rows::<U3>(3).into_owned();
@@ -282,16 +287,28 @@ fn state_partials() {
         println!("range_rate = {}", range_rate);
 
         // Extract result into Vector2 and Matrix2x6
-        let mut fx = Vector2::zeros();
-        let mut pmat = Matrix2x6::zeros();
-        for i in 0..U2::dim() {
-            fx[i] = if i == 0 { range.real() } else { range_rate.real() };
-            for j in 1..U7::dim() {
-                pmat[(i, j - 1)] = if i == 0 { range[j] } else { range_rate[j] };
-            }
-        }
+        // let mut fx = Vector2::zeros();
+        // let mut pmat = Matrix2x6::zeros();
+        let fx = Vector2::new(
+            range,
+            range_rate
+        );
+        // for i in 0..U2::dim() {
+        //     fx[i] = if i == 0 { range.real() } else { range_rate.real() };
+        //     for j in 1..U7::dim() {
+        //         pmat[(i, j - 1)] = if i == 0 { range[j] } else { range_rate[j] };
+        //     }
+        // }
+        fx
+        // (fx, pmat)
+    }
 
-        (fx, pmat)
+    fn sensitivity_with_partials
+        (eom: &SensitivityFn, state: &StateVectorDualType) -> 
+        (OutputVectorType, JacobianType)
+    {
+        let f_dual = eom(&state);
+        extract_jacobian_and_result(&f_dual)
     }
 
     let vec = Vector6::new(
@@ -307,8 +324,7 @@ fn state_partials() {
 
     // Added for inspection
     println!("hyperstate = {}", hyperstate);
-
-    let (fx, dfdx) = sensitivity(&hyperstate);
+    let (fx, dfdx) = sensitivity_with_partials(&(sensitivity as SensitivityFn), &hyperstate);
 
     let expected_fx = Vector2::new(18831.82547853717, 0.2538107291309079);
 
