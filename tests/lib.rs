@@ -178,7 +178,14 @@ fn multivariate() {
 #[test]
 fn state_gradient() {
     // This is an example of the equation of motion gradient for a spacecrate in a two body acceleration.
-    fn eom(_t: f64, state: &VectorN<Hyperdual<f64, U7>, U6>) -> VectorN<Hyperdual<f64, U7>, U6> {
+    
+    type StateVectorType = VectorN<f64, U6>;
+    type JacobianType = MatrixN<f64, U6>;
+    type StateVectorDualType = VectorN<DualN<f64, U7>, U6>;
+    
+    // trait EomFn<T>: Fn(f64, &T) -> T{}
+    
+    fn eom(_t: f64, state: &StateVectorDualType) -> StateVectorDualType {
         // Extract data from hyperspace
         let radius = state.fixed_rows::<U3>(0).into_owned();
         let velocity = state.fixed_rows::<U3>(3).into_owned();
@@ -201,9 +208,9 @@ fn state_gradient() {
             body_acceleration[2],
         )
     }
-    fn eom_with_grad<F>(eom: &F, _t: f64, state: &VectorN<DualN<f64, U7>, U6>) -> 
-        (VectorN<f64, U6>, MatrixN<f64, U6>)
-        where F: Fn(f64, &VectorN<DualN<f64, U7>, U6>) -> VectorN<DualN<f64, U7>, U6> 
+    fn eom_with_grad<F: Fn(f64, &StateVectorDualType) -> StateVectorDualType>
+        (eom: &F, _t: f64, state: &StateVectorDualType) -> 
+        (StateVectorType, JacobianType)
     {
         let f_dual = eom(0.0, &state);
         // Extract result into Vector6 and Matrix6
