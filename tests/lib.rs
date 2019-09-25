@@ -182,8 +182,7 @@ fn state_gradient() {
     type StateVectorType = VectorN<f64, U6>;
     type JacobianType = MatrixN<f64, U6>;
     type StateVectorDualType = VectorN<DualN<f64, U7>, U6>;
-    
-    // trait EomFn<T>: Fn(f64, &T) -> T{}
+    type EomFn<T> = fn(f64, &T) -> T;
     
     fn eom(_t: f64, state: &StateVectorDualType) -> StateVectorDualType {
         // Extract data from hyperspace
@@ -208,8 +207,9 @@ fn state_gradient() {
             body_acceleration[2],
         )
     }
-    fn eom_with_grad<F: Fn(f64, &StateVectorDualType) -> StateVectorDualType>
-        (eom: &F, _t: f64, state: &StateVectorDualType) -> 
+    // fn eom_with_grad<F: Fn(f64, &StateVectorDualType) -> StateVectorDualType>
+    fn eom_with_grad
+        (eom: &EomFn<StateVectorDualType>, _t: f64, state: &StateVectorDualType) -> 
         (StateVectorType, JacobianType)
     {
         let f_dual = eom(0.0, &state);
