@@ -201,7 +201,7 @@ fn state_gradient() {
             body_acceleration[2],
         )
     }
-    fn eom_with_stm<F>(eom: &F, _t: f64, state: &VectorN<DualN<f64, U7>, U6>) -> 
+    fn eom_with_grad<F>(eom: &F, _t: f64, state: &VectorN<DualN<f64, U7>, U6>) -> 
         (VectorN<f64, U6>, MatrixN<f64, U6>)
         where F: Fn(f64, &VectorN<DualN<f64, U7>, U6>) -> VectorN<DualN<f64, U7>, U6> 
     {
@@ -224,9 +224,9 @@ fn state_gradient() {
 
     // Added for inspection
     println!("hyperstate = {}", hyperstate);
-    
+
     // Extract result into Vector6 and Matrix6
-    let (fx, grad)  = eom_with_stm(&eom, 0.0, &hyperstate);
+    let (fx, grad)  = eom_with_grad(&eom, 0.0, &hyperstate);
 
     let expected_fx = Vector6::new(
         -3.28878900377057,
