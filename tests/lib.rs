@@ -333,16 +333,12 @@ fn test_hyperspace_from_vector() {
 
     let hyperstate: VectorN<DualN<f64, U7>, U6> = hyperspace_from_vector(&vec);
 
-    for i in 0..6
-    {   
+    for i in 0..6 {
         assert!(hyperstate[i].real() == vec[i]);
-        for j in 1..7
-        {
-            if j == i+1
-            {
+        for j in 1..7 {
+            if j == i + 1 {
                 assert!(hyperstate[i][j] == 1.);
-            }
-            else{
+            } else {
                 assert!(hyperstate[i][j] == 0.);
             }
         }
