@@ -19,16 +19,16 @@ where
 pub fn extract_jacobian_and_result<T: Scalar + Zero + Float, 
                                DimInputs: Dim + DimName,
                                DimOutputs: Dim + DimName,
-                               DimDual: Dim + DimName>
-        (fx_dual: &VectorN<DualN<T, DimDual>, DimOutputs>) 
+                               DimHyper: Dim + DimName>
+        (fx_dual: &VectorN<DualN<T, DimHyper>, DimOutputs>) 
             -> (VectorN<T, DimOutputs>, MatrixMN<T, DimOutputs, DimInputs>)
 where
     DefaultAllocator: Allocator<T, DimInputs> 
             + Allocator<T, DimOutputs> 
             + Allocator<T, DimOutputs, DimInputs> 
-            + Allocator<DualN<T, DimDual>, DimOutputs> 
-            + Allocator<T, DimDual>,
-    <DefaultAllocator as Allocator<T, DimDual>>::Buffer: Copy,
+            + Allocator<DualN<T, DimHyper>, DimOutputs> 
+            + Allocator<T, DimHyper>,
+    <DefaultAllocator as Allocator<T, DimHyper>>::Buffer: Copy,
 {
     let fx = super::vector_from_hyperspace(&fx_dual);
     let mut grad =  MatrixMN::<T, DimOutputs, DimInputs>::zeros();
