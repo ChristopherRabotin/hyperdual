@@ -4,7 +4,7 @@ extern crate nalgebra as na;
 use na::{Matrix2x6, Matrix6, Vector2, Vector3, Vector6, VectorN, U2, U3, U6, U7};
 
 use hyperdual::linalg::norm;
-use hyperdual::{differentiate, hyperspace_from_vector, DimName, Dual, DualN, Float, FloatConst, Hyperdual};
+use hyperdual::{differentiate, hyperspace_from_vector, vector_from_hyperspace, DimName, Dual, DualN, Float, FloatConst, Hyperdual};
 
 macro_rules! abs_within {
     ($x:expr, $val:expr, $eps:expr, $msg:expr) => {
@@ -317,5 +317,58 @@ fn state_partials() {
         (dfdx - expected_dfdx).norm(),
         1e-20,
         format!("partial computation is incorrect -- here comes the delta: {}", dfdx - expected_dfdx)
+    );
+}
+
+#[test]
+fn test_hyperspace_from_vector() {
+    let vec = Vector6::new(
+        4354.65348345694383169757202267646790,
+        18090.19136688051366945728659629821777,
+        2901.65818158163710904773324728012085,
+        -3.74281599233443440510882282978855,
+        0.90148076630899409700248270382872,
+        1.64403461052706378886512084136484,
+    );
+
+    let hyperstate: VectorN<DualN<f64, U7>, U6> = hyperspace_from_vector(&vec);
+
+    for i in 0..6 {
+        assert!(hyperstate[i].real() == vec[i]);
+        for j in 1..7 {
+            if j == i + 1 {
+                assert!(hyperstate[i][j] == 1.);
+            } else {
+                assert!(hyperstate[i][j] == 0.);
+            }
+        }
+    }
+}
+
+#[test]
+fn test_vector_from_hyperspace() {
+    let expected_vec = Vector6::new(
+        4354.65348345694383169757202267646790,
+        18090.19136688051366945728659629821777,
+        2901.65818158163710904773324728012085,
+        -3.74281599233443440510882282978855,
+        0.90148076630899409700248270382872,
+        1.64403461052706378886512084136484,
+    );
+    let dual_vec = Vector6::new(
+        DualN::<f64, U7>::from_real(4354.65348345694383169757202267646790),
+        DualN::<f64, U7>::from_real(18090.19136688051366945728659629821777),
+        DualN::<f64, U7>::from_real(2901.65818158163710904773324728012085),
+        DualN::<f64, U7>::from_real(-3.74281599233443440510882282978855),
+        DualN::<f64, U7>::from_real(0.90148076630899409700248270382872),
+        DualN::<f64, U7>::from_real(1.64403461052706378886512084136484),
+    );
+
+    let vector = vector_from_hyperspace(&dual_vec);
+
+    zero_within!(
+        (vector - expected_vec).norm(),
+        1e-20,
+        format!("vector_from_hyperspace test failed, norm: {}", vector - expected_vec)
     );
 }
