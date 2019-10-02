@@ -279,22 +279,8 @@ fn state_partials() {
         let range = norm(&range_vec);
         let range_rate = range_vec.dot(&delta_v_vec);
 
-        // Added for inspection only
-        println!("range = {}", range);
-        println!("range_rate = {}", range_rate);
-
         // Extract result into Vector2 and Matrix2x6
-        // let mut fx = Vector2::zeros();
-        // let mut pmat = Matrix2x6::zeros();
-        let fx = Vector2::new(range, range_rate);
-        // for i in 0..U2::dim() {
-        //     fx[i] = if i == 0 { range.real() } else { range_rate.real() };
-        //     for j in 1..U7::dim() {
-        //         pmat[(i, j - 1)] = if i == 0 { range[j] } else { range_rate[j] };
-        //     }
-        // }
-        fx
-        // (fx, pmat)
+        Vector2::new(range, range_rate)
     }
 
     fn sensitivity_with_partials(eom: &SensitivityFn, state: &StateVectorDualType) -> (OutputVectorType, JacobianType) {
