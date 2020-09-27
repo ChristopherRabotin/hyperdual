@@ -10,7 +10,7 @@ use hyperdual::{
 
 macro_rules! abs_within {
     ($x:expr, $val:expr, $eps:expr, $msg:expr) => {
-        assert!(dbg!($x - $val).abs() <= $eps, $msg)
+        assert!(($x - $val).abs() <= $eps, $msg)
     };
 }
 
@@ -377,4 +377,64 @@ fn test_vector_from_hyperspace() {
         std::f64::EPSILON,
         format!("vector_from_hyperspace test failed, norm: {}", vector - expected_vec)
     );
+}
+
+#[test]
+fn test_hypot() {
+    let x: Hyperdual<f64, U3> = Hyperdual::from_slice(&[3.0, 1.0, 0.0]);
+    let y: Hyperdual<f64, U3> = Hyperdual::from_slice(&[4.0, 0.0, 1.0]);
+    let dist1 = (x * x + y * y).sqrt();
+    let dist2 = x.hypot(y);
+
+    abs_within!(dist1, dist2, std::f64::EPSILON, "incorrect hypot reals");
+    abs_within!(dist1[1], dist2[1], std::f64::EPSILON, "incorrect hypot df/dx");
+    abs_within!(dist1[2], dist2[2], std::f64::EPSILON, "incorrect hypot df/dy");
+}
+
+#[test]
+fn test_div() {
+    let x: Hyperdual<f64, U3> = Hyperdual::from_slice(&[3.0, 1.0, 0.0]);
+    let y: Hyperdual<f64, U3> = Hyperdual::from_slice(&[4.0, 0.0, 1.0]);
+    let rslt = x / y;
+    let expt: Hyperdual<f64, U3> = Hyperdual::from_slice(&[3.0 / 4.0, 1.0 / 4.0, -3.0 / 16.0]);
+
+    abs_within!(rslt, expt, std::f64::EPSILON, "incorrect reals");
+    abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
+    abs_within!(rslt[2], expt[2], std::f64::EPSILON, "incorrect df/dy");
+}
+
+#[test]
+fn test_powf() {
+    let x: Hyperdual<f64, U2> = Hyperdual::from_slice(&[3.0, 1.0]);
+    let y: Hyperdual<f64, U2> = Hyperdual::from_slice(&[2.3, 0.0]);
+    let rslt = x.powf(y);
+    let expt: Hyperdual<f64, U2> = Hyperdual::from_slice(&[12.513502532843182, 9.593685275179771]);
+
+    abs_within!(rslt, expt, std::f64::EPSILON, "incorrect reals");
+    abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
+}
+
+#[test]
+fn test_atan2() {
+    /*
+    Reproduce in sympy with the following (note that we are doing y.atan2(x))
+    >>> from sympy import *
+    >>> x, y = symbols('x y')
+    >>> expr = atan(y/x)
+    >>> dfdx = expr.diff(x)
+    >>> dfdy = expr.diff(y)
+    >>> dfdy.evalf(subs={y:2.0, x:3.0})
+    0.230769230769231
+    >>> dfdx.evalf(subs={y:2.0, x:3.0})
+    -0.153846153846154
+    >>>
+
+        */
+    let x: Hyperdual<f64, U3> = Hyperdual::from_slice(&[3.0, 0.0, 1.0]);
+    let y: Hyperdual<f64, U3> = Hyperdual::from_slice(&[2.0, 1.0, 0.0]);
+    let rslt = y.atan2(x);
+    let expt: Hyperdual<f64, U3> = Hyperdual::from_slice(&[0.5880026035475675, 0.23076923076923075, -0.15384615384615383]);
+
+    abs_within!(dbg!(rslt), dbg!(expt), std::f64::EPSILON, "incorrect reals");
+    abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
 }
