@@ -13,7 +13,7 @@ where
     let mut val = Hyperdual::<T, N>::zero();
 
     for i in 0..M::dim() {
-        val = val + v[i].powi(2);
+        val += v[i].powi(2);
     }
 
     val.sqrt()
