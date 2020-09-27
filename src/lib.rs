@@ -535,7 +535,6 @@ where
 
     #[inline]
     fn mul(self, rhs: Self) -> Self {
-        // TODO: skip real part
         let mut v = self.zip_map(&rhs, |x, y| rhs.real() * x + self.real() * y);
         v[0] = self.real() * rhs.real();
         Hyperdual(v)
@@ -596,10 +595,8 @@ where
     #[inline]
     #[allow(clippy::suspicious_arithmetic_impl)]
     fn div(self, rhs: Self) -> Self {
-        // TODO: specialize with inv so we can precompute the inverse
         let d = rhs.real() * rhs.real();
 
-        // TODO: skip real part
         let mut v = self.zip_map(&rhs, |x, y| (rhs.real() * x - self.real() * y) / d);
         v[0] = self.real() / rhs.real();
         Hyperdual(v)
@@ -981,12 +978,12 @@ where
 
     #[inline]
     fn powf(self, n: Self) -> Self {
-        let c = self.real().powf(n.real());
+        let real_part = self.real().powf(n.real());
         let a = n.real() * self.real().powf(n.real() - T::one());
-        let b = c * self.real().ln();
+        let b = real_part * self.real().ln();
 
         let mut v = self.zip_map(&n, |x, y| a * x + b * y);
-        v[0] = c;
+        v[0] = real_part;
         Hyperdual(v)
     }
 
@@ -1038,7 +1035,7 @@ where
     #[inline]
     fn hypot(self, other: Self) -> Self {
         let c = self.real().hypot(other.real());
-        let mut v = self.zip_map(&other, |x, y| (self.real() * y + other.real() * x) / c);
+        let mut v = self.zip_map(&other, |x, y| (self.real() * x + other.real() * y) / c);
         v[0] = c;
         Hyperdual(v)
     }
