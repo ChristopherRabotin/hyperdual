@@ -10,13 +10,13 @@ use hyperdual::{
 
 macro_rules! abs_within {
     ($x:expr, $val:expr, $eps:expr, $msg:expr) => {
-        assert!(($x - $val).abs() < $eps, $msg)
+        assert!(dbg!($x - $val).abs() <= $eps, $msg)
     };
 }
 
 macro_rules! zero_within {
     ($x:expr, $eps:expr, $msg:expr) => {
-        assert!($x.abs() < $eps, $msg)
+        assert!($x.abs() <= $eps, $msg)
     };
 }
 
@@ -60,10 +60,10 @@ fn derive() {
     assert_eq!(x.dual(), 5i32, "incorrect real");
 
     let c = Dual::new(1.0 / 2f64.sqrt(), 1.0).asin();
-    abs_within!(c.dual(), 1.414213562373095, std::f64::EPSILON, "incorrect d/dx arcsin");
+    abs_within!(c.dual(), std::f64::consts::SQRT_2, std::f64::EPSILON, "incorrect d/dx arcsin");
 
     let c = Dual::new(1.0 / 2f64.sqrt(), 1.0).acos();
-    abs_within!(c.dual(), -1.414213562373095, std::f64::EPSILON, "incorrect d/dx arccos");
+    abs_within!(c.dual(), -std::f64::consts::SQRT_2, std::f64::EPSILON, "incorrect d/dx arccos");
 
     let c = Dual::new(1.0 / 2f64.sqrt(), 1.0).atan();
     abs_within!(c.dual(), 2.0f64 / 3.0f64, std::f64::EPSILON, "incorrect d/dx arctan");
@@ -170,9 +170,9 @@ fn multivariate() {
     let y: DualN<f64, U3> = Hyperdual::from_slice(&[5.0, 0.0, 1.0]);
 
     let res = x * x + (x * y).sin() + y.powi(3);
-    zero_within!((res[0] - 141.91294525072763), 1e-13, format!("f(4, 5) incorrect"));
-    zero_within!((res[1] - 10.04041030906696), 1e-13, format!("df/dx(4, 5) incorrect"));
-    zero_within!((res[2] - 76.63232824725357), 1e-13, format!("df/dy(4, 5) incorrect"));
+    zero_within!((res[0] - 141.91294525072763), 1e-13, "f(4, 5) incorrect");
+    zero_within!((res[1] - 10.04041030906696), 1e-13, "df/dx(4, 5) incorrect");
+    zero_within!((res[2] - 76.63232824725357), 1e-13, "df/dy(4, 5) incorrect");
 }
 
 #[test]
@@ -191,7 +191,7 @@ fn state_gradient() {
 
         // Code up math as usual
         let rmag = norm(&radius);
-        let body_acceleration = radius * (Hyperdual::<f64, U7>::from_real(-398_600.4415) / rmag.powi(3));
+        let body_acceleration = radius * (Hyperdual::<f64, U7>::from_real(-398_600.441_5) / rmag.powi(3));
 
         // Added for inspection only
         println!("velocity = {}", velocity);
@@ -289,12 +289,12 @@ fn state_partials() {
     }
 
     let vec = Vector6::new(
-        4354.65348345694383169757202267646790,
-        18090.19136688051366945728659629821777,
-        2901.65818158163710904773324728012085,
-        -3.74281599233443440510882282978855,
-        0.90148076630899409700248270382872,
-        1.64403461052706378886512084136484,
+        4_354.653_483_456_944,
+        18_090.191_366_880_514,
+        2_901.658_181_581_637,
+        -3.742_815_992_334_434_4,
+        0.901_480_766_308_994_1,
+        1.644_034_610_527_063_8,
     );
 
     let hyperstate = hyperspace_from_vector(&vec);
@@ -312,15 +312,15 @@ fn state_partials() {
     );
 
     let mut expected_dfdx = Matrix2x6::zeros();
-    expected_dfdx[(0, 0)] = 0.23123905265689662091;
-    expected_dfdx[(0, 1)] = 0.96061804457024613235;
-    expected_dfdx[(0, 2)] = 0.15408268225981000543;
+    expected_dfdx[(0, 0)] = 0.231_239_052_656_896_62;
+    expected_dfdx[(0, 1)] = 0.960_618_044_570_246_1;
+    expected_dfdx[(0, 2)] = 0.154_082_682_259_81;
     expected_dfdx[(1, 0)] = -0.00020186608829958833;
     expected_dfdx[(1, 1)] = 0.00003492309339579752;
     expected_dfdx[(1, 2)] = 0.00008522417406774546;
-    expected_dfdx[(1, 3)] = 0.23123905265689662091;
-    expected_dfdx[(1, 4)] = 0.96061804457024613235;
-    expected_dfdx[(1, 5)] = 0.15408268225981000543;
+    expected_dfdx[(1, 3)] = 0.231_239_052_656_896_62;
+    expected_dfdx[(1, 4)] = 0.960_618_044_570_246_1;
+    expected_dfdx[(1, 5)] = 0.154_082_682_259_81;
 
     zero_within!(
         (dfdx - expected_dfdx).norm(),
@@ -332,24 +332,21 @@ fn state_partials() {
 #[test]
 fn test_hyperspace_from_vector() {
     let vec = Vector6::new(
-        4354.65348345694383169757202267646790,
-        18090.19136688051366945728659629821777,
-        2901.65818158163710904773324728012085,
-        -3.74281599233443440510882282978855,
-        0.90148076630899409700248270382872,
-        1.64403461052706378886512084136484,
+        4_354.653_483_456_944,
+        18_090.191_366_880_514,
+        2_901.658_181_581_637,
+        -3.742_815_992_334_434_4,
+        0.901_480_766_308_994_1,
+        1.644_034_610_527_063_8,
     );
 
     let hyperstate: VectorN<DualN<f64, U7>, U6> = hyperspace_from_vector(&vec);
 
     for i in 0..6 {
-        assert!(hyperstate[i].real() == vec[i]);
+        abs_within!(hyperstate[i].real(), vec[i], std::f64::EPSILON, "incorrect real value");
         for j in 1..7 {
-            if j == i + 1 {
-                assert!(hyperstate[i][j] == 1.);
-            } else {
-                assert!(hyperstate[i][j] == 0.);
-            }
+            let expected = if j == i + 1 { 1.0 } else { 0.0 };
+            abs_within!(hyperstate[i][j], expected, std::f64::EPSILON, "incorrect partial");
         }
     }
 }
@@ -357,27 +354,27 @@ fn test_hyperspace_from_vector() {
 #[test]
 fn test_vector_from_hyperspace() {
     let expected_vec = Vector6::new(
-        4354.65348345694383169757202267646790,
-        18090.19136688051366945728659629821777,
-        2901.65818158163710904773324728012085,
-        -3.74281599233443440510882282978855,
-        0.90148076630899409700248270382872,
-        1.64403461052706378886512084136484,
+        4_354.653_483_456_944,
+        18_090.191_366_880_514,
+        2_901.658_181_581_637,
+        -3.742_815_992_334_434_4,
+        0.901_480_766_308_994_1,
+        1.644_034_610_527_063_8,
     );
     let dual_vec = Vector6::new(
-        DualN::<f64, U7>::from_real(4354.65348345694383169757202267646790),
-        DualN::<f64, U7>::from_real(18090.19136688051366945728659629821777),
-        DualN::<f64, U7>::from_real(2901.65818158163710904773324728012085),
-        DualN::<f64, U7>::from_real(-3.74281599233443440510882282978855),
-        DualN::<f64, U7>::from_real(0.90148076630899409700248270382872),
-        DualN::<f64, U7>::from_real(1.64403461052706378886512084136484),
+        DualN::<f64, U7>::from_real(4_354.653_483_456_944),
+        DualN::<f64, U7>::from_real(18_090.191_366_880_514),
+        DualN::<f64, U7>::from_real(2_901.658_181_581_637),
+        DualN::<f64, U7>::from_real(-3.742_815_992_334_434_4),
+        DualN::<f64, U7>::from_real(0.901_480_766_308_994_1),
+        DualN::<f64, U7>::from_real(1.644_034_610_527_063_8),
     );
 
     let vector = vector_from_hyperspace(&dual_vec);
 
     zero_within!(
         (vector - expected_vec).norm(),
-        1e-20,
+        std::f64::EPSILON,
         format!("vector_from_hyperspace test failed, norm: {}", vector - expected_vec)
     );
 }
