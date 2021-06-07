@@ -1,7 +1,7 @@
 extern crate hyperdual;
 extern crate nalgebra as na;
 
-use na::{Matrix2x6, Matrix6, MatrixN, Vector2, Vector3, Vector6, VectorN, U2, U3, U6, U7};
+use na::{Matrix2x6, Matrix6, SMatrix, SVector, Vector2, Vector3, Vector6};
 
 use hyperdual::linalg::norm;
 use hyperdual::{
@@ -164,10 +164,10 @@ fn linalg() {
 #[test]
 fn multivariate() {
     // find partial derivative at x=4.0, y=5.0 for f(x,y)=x^2+sin(x*y)+y^3
-    let x: Hyperdual<f64, U3> = Hyperdual::from_slice(&[4.0, 1.0, 0.0]);
+    let x: Hyperdual<f64, 3> = Hyperdual::from_slice(&[4.0, 1.0, 0.0]);
     // DualN and Hyperdual are interchangeable aliases. Hyperdual is the name from Fike 2012
     // whereas multi-dual is from Revel et al. 2016.
-    let y: DualN<f64, U3> = Hyperdual::from_slice(&[5.0, 0.0, 1.0]);
+    let y: DualN<f64, 3> = Hyperdual::from_slice(&[5.0, 0.0, 1.0]);
 
     let res = x * x + (x * y).sin() + y.powi(3);
     zero_within!((res[0] - 141.91294525072763), 1e-13, "f(4, 5) incorrect");
@@ -179,19 +179,19 @@ fn multivariate() {
 fn state_gradient() {
     // This is an example of the equation of motion gradient for a spacecrate in a two body acceleration.
 
-    type StateVectorType = VectorN<f64, U6>;
-    type JacobianType = MatrixN<f64, U6>;
-    type StateVectorDualType = VectorN<DualN<f64, U7>, U6>;
+    type StateVectorType = SVector<f64, 6>;
+    type JacobianType = SMatrix<f64, 6, 6>;
+    type StateVectorDualType = SVector<DualN<f64, 7>, 6>;
     type EomFn<T> = fn(f64, &T) -> T;
 
     fn eom(_t: f64, state: &StateVectorDualType) -> StateVectorDualType {
         // Extract data from hyperspace
-        let radius = state.fixed_rows::<U3>(0).into_owned();
-        let velocity = state.fixed_rows::<U3>(3).into_owned();
+        let radius = state.fixed_rows::<3>(0).into_owned();
+        let velocity = state.fixed_rows::<3>(3).into_owned();
 
         // Code up math as usual
         let rmag = norm(&radius);
-        let body_acceleration = radius * (Hyperdual::<f64, U7>::from_real(-398_600.441_5) / rmag.powi(3));
+        let body_acceleration = radius * (Hyperdual::<f64, 7>::from_real(-398_600.441_5) / rmag.powi(3));
 
         // Added for inspection only
         println!("velocity = {}", velocity);
@@ -264,15 +264,15 @@ fn state_gradient() {
 fn state_partials() {
     type OutputVectorType = Vector2<f64>;
     type JacobianType = Matrix2x6<f64>;
-    type StateVectorDualType = VectorN<Hyperdual<f64, U7>, U6>;
-    type OutputVectorDualType = VectorN<Hyperdual<f64, U7>, U2>;
+    type StateVectorDualType = SVector<Hyperdual<f64, 7>, 6>;
+    type OutputVectorDualType = SVector<Hyperdual<f64, 7>, 2>;
     type SensitivityFn = fn(&StateVectorDualType) -> OutputVectorDualType;
 
     // This is an example of the sensitivity matrix (H tilde) of a ranging method.
     fn sensitivity(state: &StateVectorDualType) -> OutputVectorDualType {
         // Extract data from hyperspace
-        let range_vec = state.fixed_rows::<U3>(0).into_owned();
-        let velocity_vec = state.fixed_rows::<U3>(3).into_owned();
+        let range_vec = state.fixed_rows::<3>(0).into_owned();
+        let velocity_vec = state.fixed_rows::<3>(3).into_owned();
 
         // Code up math as usual
         let delta_v_vec = velocity_vec / norm(&range_vec);
@@ -340,7 +340,7 @@ fn test_hyperspace_from_vector() {
         1.644_034_610_527_063_8,
     );
 
-    let hyperstate: VectorN<DualN<f64, U7>, U6> = hyperspace_from_vector(&vec);
+    let hyperstate: SVector<DualN<f64, 7>, 6> = hyperspace_from_vector(&vec);
 
     for i in 0..6 {
         abs_within!(hyperstate[i].real(), vec[i], std::f64::EPSILON, "incorrect real value");
@@ -362,12 +362,12 @@ fn test_vector_from_hyperspace() {
         1.644_034_610_527_063_8,
     );
     let dual_vec = Vector6::new(
-        DualN::<f64, U7>::from_real(4_354.653_483_456_944),
-        DualN::<f64, U7>::from_real(18_090.191_366_880_514),
-        DualN::<f64, U7>::from_real(2_901.658_181_581_637),
-        DualN::<f64, U7>::from_real(-3.742_815_992_334_434_4),
-        DualN::<f64, U7>::from_real(0.901_480_766_308_994_1),
-        DualN::<f64, U7>::from_real(1.644_034_610_527_063_8),
+        DualN::<f64, 7>::from_real(4_354.653_483_456_944),
+        DualN::<f64, 7>::from_real(18_090.191_366_880_514),
+        DualN::<f64, 7>::from_real(2_901.658_181_581_637),
+        DualN::<f64, 7>::from_real(-3.742_815_992_334_434_4),
+        DualN::<f64, 7>::from_real(0.901_480_766_308_994_1),
+        DualN::<f64, 7>::from_real(1.644_034_610_527_063_8),
     );
 
     let vector = vector_from_hyperspace(&dual_vec);
@@ -381,8 +381,8 @@ fn test_vector_from_hyperspace() {
 
 #[test]
 fn test_hypot() {
-    let x: Hyperdual<f64, U3> = Hyperdual::from_slice(&[3.0, 1.0, 0.0]);
-    let y: Hyperdual<f64, U3> = Hyperdual::from_slice(&[4.0, 0.0, 1.0]);
+    let x: Hyperdual<f64, 3> = Hyperdual::from_slice(&[3.0, 1.0, 0.0]);
+    let y: Hyperdual<f64, 3> = Hyperdual::from_slice(&[4.0, 0.0, 1.0]);
     let dist1 = (x * x + y * y).sqrt();
     let dist2 = x.hypot(y);
 
@@ -393,10 +393,10 @@ fn test_hypot() {
 
 #[test]
 fn test_div() {
-    let x: Hyperdual<f64, U3> = Hyperdual::from_slice(&[3.0, 1.0, 0.0]);
-    let y: Hyperdual<f64, U3> = Hyperdual::from_slice(&[4.0, 0.0, 1.0]);
+    let x: Hyperdual<f64, 3> = Hyperdual::from_slice(&[3.0, 1.0, 0.0]);
+    let y: Hyperdual<f64, 3> = Hyperdual::from_slice(&[4.0, 0.0, 1.0]);
     let rslt = x / y;
-    let expt: Hyperdual<f64, U3> = Hyperdual::from_slice(&[3.0 / 4.0, 1.0 / 4.0, -3.0 / 16.0]);
+    let expt: Hyperdual<f64, 3> = Hyperdual::from_slice(&[3.0 / 4.0, 1.0 / 4.0, -3.0 / 16.0]);
 
     abs_within!(rslt, expt, std::f64::EPSILON, "incorrect reals");
     abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
@@ -405,10 +405,10 @@ fn test_div() {
 
 #[test]
 fn test_powf() {
-    let x: Hyperdual<f64, U2> = Hyperdual::from_slice(&[3.0, 1.0]);
-    let y: Hyperdual<f64, U2> = Hyperdual::from_slice(&[2.3, 0.0]);
+    let x: Hyperdual<f64, 2> = Hyperdual::from_slice(&[3.0, 1.0]);
+    let y: Hyperdual<f64, 2> = Hyperdual::from_slice(&[2.3, 0.0]);
     let rslt = x.powf(y);
-    let expt: Hyperdual<f64, U2> = Hyperdual::from_slice(&[12.513502532843182, 9.593685275179771]);
+    let expt: Hyperdual<f64, 2> = Hyperdual::from_slice(&[12.513502532843182, 9.593685275179771]);
 
     abs_within!(rslt, expt, std::f64::EPSILON, "incorrect reals");
     abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
@@ -430,10 +430,10 @@ fn test_atan2() {
     >>>
 
         */
-    let x: Hyperdual<f64, U3> = Hyperdual::from_slice(&[3.0, 0.0, 1.0]);
-    let y: Hyperdual<f64, U3> = Hyperdual::from_slice(&[2.0, 1.0, 0.0]);
+    let x: Hyperdual<f64, 3> = Hyperdual::from_slice(&[3.0, 0.0, 1.0]);
+    let y: Hyperdual<f64, 3> = Hyperdual::from_slice(&[2.0, 1.0, 0.0]);
     let rslt = y.atan2(x);
-    let expt: Hyperdual<f64, U3> = Hyperdual::from_slice(&[0.5880026035475675, 0.23076923076923075, -0.15384615384615383]);
+    let expt: Hyperdual<f64, 3> = Hyperdual::from_slice(&[0.5880026035475675, 0.23076923076923075, -0.15384615384615383]);
 
     abs_within!(dbg!(rslt), dbg!(expt), std::f64::EPSILON, "incorrect reals");
     abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
