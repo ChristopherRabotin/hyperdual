@@ -415,9 +415,10 @@ fn test_powf() {
 }
 
 #[test]
-fn test_atan2() {
+fn test_trig_atan2() {
     /*
     Reproduce in sympy with the following (note that we are doing y.atan2(x))
+    The same test was done with atan and atan2, leading to the same result.
     >>> from sympy import *
     >>> x, y = symbols('x y')
     >>> expr = atan(y/x)
@@ -433,8 +434,58 @@ fn test_atan2() {
     let x: Hyperdual<f64, 3> = Hyperdual::from_slice(&[3.0, 0.0, 1.0]);
     let y: Hyperdual<f64, 3> = Hyperdual::from_slice(&[2.0, 1.0, 0.0]);
     let rslt = y.atan2(x);
+    let rslt_atan = (y / x).atan();
     let expt: Hyperdual<f64, 3> = Hyperdual::from_slice(&[0.5880026035475675, 0.23076923076923075, -0.15384615384615383]);
 
     abs_within!(dbg!(rslt), dbg!(expt), std::f64::EPSILON, "incorrect reals");
     abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
+    abs_within!(rslt[2], expt[2], std::f64::EPSILON, "incorrect df/dy");
+    abs_within!(dbg!(rslt[0].tan()), 2.0 / 3.0, std::f64::EPSILON, "incorrect inverse function");
+
+    abs_within!(dbg!(rslt_atan), dbg!(expt), std::f64::EPSILON, "incorrect reals");
+    abs_within!(rslt_atan[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
+    abs_within!(rslt_atan[2], expt[2], std::f64::EPSILON, "incorrect df/dy");
+    abs_within!(dbg!(rslt_atan[0].tan()), 2.0 / 3.0, std::f64::EPSILON, "incorrect inverse function");
+}
+
+#[test]
+fn test_trig_acos() {
+    /*
+    Reproduce in sympy with the following (note that we are doing y.atan2(x))
+    >>> from sympy import *
+    >>> x, y = symbols('x y')
+    >>> expr_acos = acos(x)
+    >>> dfdx_acos = expr_acos.diff(x)
+    >>> dfdx_acos.evalf(subs={x:0.59})
+    -1.23853849513327
+    >>>
+        */
+    let x: Hyperdual<f64, 2> = Hyperdual::from_slice(&[0.59, 1.0]);
+    let rslt = x.acos();
+    let expt: Hyperdual<f64, 2> = Hyperdual::from_slice(&[0.9397374860168752, -1.238538495133269]);
+
+    abs_within!(dbg!(rslt), dbg!(expt), std::f64::EPSILON, "incorrect reals");
+    abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
+    abs_within!(rslt[0].cos(), 0.59, std::f64::EPSILON, "incorrect inverse function");
+}
+
+#[test]
+fn test_trig_asin() {
+    /*
+    Reproduce in sympy with the following (note that we are doing y.atan2(x))
+    >>> from sympy import *
+    >>> x, y = symbols('x y')
+    >>> expr_asin = asin(x)
+    >>> dfdx_asin = expr_asin.diff(x)
+    >>> dfdx_asin.evalf(subs={x:0.59})
+    1.23853849513327
+    >>>
+        */
+    let x: Hyperdual<f64, 2> = Hyperdual::from_slice(&[0.59, 1.0]);
+    let rslt = x.asin();
+    let expt: Hyperdual<f64, 2> = Hyperdual::from_slice(&[0.6310588407780213, 1.238538495133269]);
+
+    abs_within!(dbg!(rslt), dbg!(expt), std::f64::EPSILON, "incorrect reals");
+    abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
+    abs_within!(rslt[0].sin(), 0.59, std::f64::EPSILON, "incorrect inverse function");
 }

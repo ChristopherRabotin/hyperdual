@@ -112,7 +112,6 @@ impl<T: Copy + Scalar, const N: usize> Hyperdual<T, N> {
     where
         F: Fn(&T) -> T,
     {
-        // TODO: improve, so the real does not get mapped
         let mut v = self.map(|x| f(&x));
         v[0] = r;
         Hyperdual(v)
@@ -872,21 +871,18 @@ where
 
     #[inline]
     fn asin(self) -> Self {
-        // TODO: implement inv
         let c = (T::one() - self.real().powi(2)).sqrt();
         self.map_dual(self.real().asin(), |x| *x / c)
     }
 
     #[inline]
     fn acos(self) -> Self {
-        // TODO: implement inv
         let c = (T::one() - self.real().powi(2)).sqrt();
         self.map_dual(self.real().acos(), |x| x.neg() / c)
     }
 
     #[inline]
     fn atan(self) -> Self {
-        // TODO: implement inv
         let c = T::one() + self.real().powi(2);
         self.map_dual(self.real().atan(), |x| *x / c)
     }
@@ -971,9 +967,6 @@ where
         Hyperdual::from_real(self.real().to_radians())
     }
 }
-
-// TODO
-// impl<T: na::Real> na::Real for Hyperdual<T,N> {}
 
 pub type Dual<T> = Hyperdual<T, 2>;
 
