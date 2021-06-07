@@ -7,7 +7,7 @@
 //! ```rust
 //! extern crate hyperdual;
 //!
-//! use hyperdual::{Dual, Hyperdual, Float, differentiate, U3};
+//! use hyperdual::{Dual, Hyperdual, Float, differentiate, U3, Const};
 //!
 //! fn main() {
 //!     // find partial derivative at x=4.0
@@ -17,6 +17,15 @@
 //!     // find the partial derivatives of a multivariate function
 //!     let x: Hyperdual<f64, U3> = Hyperdual::from_slice(&[4.0, 1.0, 0.0]);
 //!     let y: Hyperdual<f64, U3> = Hyperdual::from_slice(&[5.0, 0.0, 1.0]);
+//!
+//!     let multivariate = x * x + (x * y).sin() + y.powi(3);
+//!     assert!((multivariate[0] - 141.91294525072763).abs() < 1e-13, "f(4, 5) incorrect");
+//!     assert!((multivariate[1] - 10.04041030906696).abs() < 1e-13, "df/dx(4, 5) incorrect");
+//!     assert!((multivariate[2] - 76.63232824725357).abs() < 1e-13, "df/dy(4, 5) incorrect");
+//!
+//!     // You may also use the new Const approach (both U* and Const<*> use the const generics)
+//!     let x: Hyperdual<f64, Const<3>> = Hyperdual::from_slice(&[4.0, 1.0, 0.0]);
+//!     let y: Hyperdual<f64, Const<3>> = Hyperdual::from_slice(&[5.0, 0.0, 1.0]);
 //!
 //!     let multivariate = x * x + (x * y).sin() + y.powi(3);
 //!     assert!((multivariate[0] - 141.91294525072763).abs() < 1e-13, "f(4, 5) incorrect");
