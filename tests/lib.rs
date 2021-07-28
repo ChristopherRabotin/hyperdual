@@ -467,6 +467,11 @@ fn test_trig_acos() {
     abs_within!(dbg!(rslt), dbg!(expt), std::f64::EPSILON, "incorrect reals");
     abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
     abs_within!(rslt[0].cos(), 0.59, std::f64::EPSILON, "incorrect inverse function");
+
+    let rslt_deg = rslt.to_degrees();
+    abs_within!(rslt_deg[0], rslt[0].to_degrees(), std::f64::EPSILON, "incorrect to_degrees");
+    abs_within!(rslt_deg[1], rslt[1].to_degrees(), std::f64::EPSILON, "incorrect to_degrees for dual");
+    abs_within!(rslt_deg.to_radians(), rslt, std::f64::EPSILON, "incorrect return conversion");
 }
 
 #[test]
