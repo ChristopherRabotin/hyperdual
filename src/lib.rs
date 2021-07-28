@@ -1162,17 +1162,14 @@ where
 
     #[inline]
     fn to_degrees(self) -> Self {
-        Hyperdual::from_real(self.real().to_degrees())
+        self.map_dual(self.real().to_degrees(), |x| x.to_degrees())
     }
 
     #[inline]
     fn to_radians(self) -> Self {
-        Hyperdual::from_real(self.real().to_radians())
+        self.map_dual(self.real().to_radians(), |x| x.to_radians())
     }
 }
-
-// TODO
-// impl<T: na::Real> na::Real for Hyperdual<T,N> {}
 
 pub type Dual<T> = Hyperdual<T, U2>;
 
