@@ -79,8 +79,7 @@ pub use na::{DefaultAllocator, Dim, DimName};
 #[derive(Clone, Copy)]
 pub struct Hyperdual<T: Copy + Scalar, const N: usize>(SVector<T, N>);
 
-impl<T: Copy + Scalar, const N: usize> Hyperdual<T, N>
-{
+impl<T: Copy + Scalar, const N: usize> Hyperdual<T, N> {
     /// Create a new dual number from its real and dual parts.
     #[inline]
     pub fn from_slice(v: &[T]) -> Hyperdual<T, N> {
@@ -138,8 +137,7 @@ impl<T: Copy + Scalar, const N: usize> Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar, const N: usize> Debug for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar, const N: usize> Debug for Hyperdual<T, N> {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
         let mut a = f.debug_tuple("Dual");
         for x in self.iter() {
@@ -149,24 +147,21 @@ impl<T: Copy + Scalar, const N: usize> Debug for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Num + Zero, const N: usize> Default for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num + Zero, const N: usize> Default for Hyperdual<T, N> {
     #[inline]
     fn default() -> Hyperdual<T, N> {
         Hyperdual::zero()
     }
 }
 
-impl<T: Copy + Scalar + Zero, const N: usize> From<T> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Zero, const N: usize> From<T> for Hyperdual<T, N> {
     #[inline]
     fn from(real: T) -> Hyperdual<T, N> {
         Hyperdual::from_real(real)
     }
 }
 
-impl<T: Copy + Scalar, const N: usize> Deref for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar, const N: usize> Deref for Hyperdual<T, N> {
     type Target = SVector<T, N>;
 
     #[inline]
@@ -175,32 +170,28 @@ impl<T: Copy + Scalar, const N: usize> Deref for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar, const N: usize> DerefMut for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar, const N: usize> DerefMut for Hyperdual<T, N> {
     #[inline]
     fn deref_mut(&mut self) -> &mut SVector<T, N> {
         &mut self.0
     }
 }
 
-impl<T: Copy + Scalar, const N: usize> AsRef<SVector<T, N>> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar, const N: usize> AsRef<SVector<T, N>> for Hyperdual<T, N> {
     #[inline]
     fn as_ref(&self) -> &SVector<T, N> {
         &self.0
     }
 }
 
-impl<T: Copy + Scalar, const N: usize> AsMut<SVector<T, N>> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar, const N: usize> AsMut<SVector<T, N>> for Hyperdual<T, N> {
     #[inline]
     fn as_mut(&mut self) -> &mut SVector<T, N> {
         &mut self.0
     }
 }
 
-impl<T: Copy + Scalar + Neg<Output = T>, const N: usize> Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Neg<Output = T>, const N: usize> Hyperdual<T, N> {
     /// Returns the conjugate of the dual number.
     #[inline]
     pub fn conjugate(self) -> Self {
@@ -208,8 +199,7 @@ impl<T: Copy + Scalar + Neg<Output = T>, const N: usize> Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Display, const N: usize> Display for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Display, const N: usize> Display for Hyperdual<T, N> {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
         let precision = f.precision().unwrap_or(4);
 
@@ -222,16 +212,14 @@ impl<T: Copy + Scalar + Display, const N: usize> Display for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + PartialEq, const N: usize> PartialEq<Self> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + PartialEq, const N: usize> PartialEq<Self> for Hyperdual<T, N> {
     #[inline]
     fn eq(&self, rhs: &Self) -> bool {
         self.0 == rhs.0
     }
 }
 
-impl<T: Copy + Scalar + PartialOrd, const N: usize> PartialOrd<Self> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + PartialOrd, const N: usize> PartialOrd<Self> for Hyperdual<T, N> {
     #[inline]
     fn partial_cmp(&self, rhs: &Self) -> Option<Ordering> {
         PartialOrd::partial_cmp(self.real_ref(), rhs.real_ref())
@@ -248,16 +236,14 @@ impl<T: Copy + Scalar + PartialOrd, const N: usize> PartialOrd<Self> for Hyperdu
     }
 }
 
-impl<T: Copy + Scalar + PartialEq, const N: usize> PartialEq<T> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + PartialEq, const N: usize> PartialEq<T> for Hyperdual<T, N> {
     #[inline]
     fn eq(&self, rhs: &T) -> bool {
         *self.real_ref() == *rhs
     }
 }
 
-impl<T: Copy + Scalar + PartialOrd, const N: usize> PartialOrd<T> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + PartialOrd, const N: usize> PartialOrd<T> for Hyperdual<T, N> {
     #[inline]
     fn partial_cmp(&self, rhs: &T) -> Option<Ordering> {
         PartialOrd::partial_cmp(self.real_ref(), rhs)
@@ -326,8 +312,7 @@ impl_primitive_cast! {
     to_f64,     from_f64    - f64
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> Add<T> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> Add<T> for Hyperdual<T, N> {
     type Output = Hyperdual<T, N>;
 
     #[inline]
@@ -338,16 +323,14 @@ impl<T: Copy + Scalar + Num, const N: usize> Add<T> for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> AddAssign<T> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> AddAssign<T> for Hyperdual<T, N> {
     #[inline]
     fn add_assign(&mut self, rhs: T) {
         *self = (*self) + Hyperdual::from_real(rhs)
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> Sub<T> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> Sub<T> for Hyperdual<T, N> {
     type Output = Hyperdual<T, N>;
 
     #[inline]
@@ -358,16 +341,14 @@ impl<T: Copy + Scalar + Num, const N: usize> Sub<T> for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> SubAssign<T> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> SubAssign<T> for Hyperdual<T, N> {
     #[inline]
     fn sub_assign(&mut self, rhs: T) {
         *self = (*self) - Hyperdual::from_real(rhs)
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> Mul<T> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> Mul<T> for Hyperdual<T, N> {
     type Output = Hyperdual<T, N>;
 
     #[inline]
@@ -376,16 +357,14 @@ impl<T: Copy + Scalar + Num, const N: usize> Mul<T> for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> MulAssign<T> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> MulAssign<T> for Hyperdual<T, N> {
     #[inline]
     fn mul_assign(&mut self, rhs: T) {
         *self = (*self) * Hyperdual::from_real(rhs)
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> Div<T> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> Div<T> for Hyperdual<T, N> {
     type Output = Hyperdual<T, N>;
 
     #[inline]
@@ -394,16 +373,14 @@ impl<T: Copy + Scalar + Num, const N: usize> Div<T> for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> DivAssign<T> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> DivAssign<T> for Hyperdual<T, N> {
     #[inline]
     fn div_assign(&mut self, rhs: T) {
         *self = (*self) / Self::from_real(rhs)
     }
 }
 
-impl<T: Copy + Scalar + Signed, const N: usize> Neg for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Signed, const N: usize> Neg for Hyperdual<T, N> {
     type Output = Self;
 
     #[inline]
@@ -412,8 +389,7 @@ impl<T: Copy + Scalar + Signed, const N: usize> Neg for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> Add<Self> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> Add<Self> for Hyperdual<T, N> {
     type Output = Self;
 
     #[inline]
@@ -422,16 +398,14 @@ impl<T: Copy + Scalar + Num, const N: usize> Add<Self> for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> AddAssign<Self> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> AddAssign<Self> for Hyperdual<T, N> {
     #[inline]
     fn add_assign(&mut self, rhs: Self) {
         *self = (*self) + rhs
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> Sub<Self> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> Sub<Self> for Hyperdual<T, N> {
     type Output = Self;
 
     #[inline]
@@ -440,16 +414,14 @@ impl<T: Copy + Scalar + Num, const N: usize> Sub<Self> for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> SubAssign<Self> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> SubAssign<Self> for Hyperdual<T, N> {
     #[inline]
     fn sub_assign(&mut self, rhs: Self) {
         *self = (*self) - rhs
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> Mul<Self> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> Mul<Self> for Hyperdual<T, N> {
     type Output = Self;
 
     #[allow(clippy::suspicious_arithmetic_impl)]
@@ -461,8 +433,7 @@ impl<T: Copy + Scalar + Num, const N: usize> Mul<Self> for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> MulAssign<Self> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> MulAssign<Self> for Hyperdual<T, N> {
     #[inline]
     fn mul_assign(&mut self, rhs: Self) {
         *self = (*self) * rhs
@@ -498,8 +469,7 @@ impl_mul_add! {
     <T, T>
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> Div<Self> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> Div<Self> for Hyperdual<T, N> {
     type Output = Self;
 
     #[inline]
@@ -513,16 +483,14 @@ impl<T: Copy + Scalar + Num, const N: usize> Div<Self> for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> DivAssign<Self> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> DivAssign<Self> for Hyperdual<T, N> {
     #[inline]
     fn div_assign(&mut self, rhs: Self) {
         *self = (*self) / rhs
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> Rem<Self> for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> Rem<Self> for Hyperdual<T, N> {
     type Output = Self;
 
     /// **UNIMPLEMENTED!!!**
@@ -593,14 +561,9 @@ where
     }
 }
 
-impl<T: Copy + Scalar + Unsigned, const N: usize> Unsigned for Hyperdual<T, N>
-where
-    Self: Num,
-{
-}
+impl<T: Copy + Scalar + Unsigned, const N: usize> Unsigned for Hyperdual<T, N> where Self: Num {}
 
-impl<T: Copy + Scalar + Num + Zero, const N: usize> Zero for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num + Zero, const N: usize> Zero for Hyperdual<T, N> {
     #[inline]
     fn zero() -> Hyperdual<T, N> {
         Hyperdual::from_real(T::zero())
@@ -612,8 +575,7 @@ impl<T: Copy + Scalar + Num + Zero, const N: usize> Zero for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Num + One, const N: usize> One for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num + One, const N: usize> One for Hyperdual<T, N> {
     #[inline]
     fn one() -> Hyperdual<T, N> {
         Hyperdual::from_real(T::one())
@@ -628,8 +590,7 @@ impl<T: Copy + Scalar + Num + One, const N: usize> One for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Num, const N: usize> Num for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num, const N: usize> Num for Hyperdual<T, N> {
     type FromStrRadixErr = <T as Num>::FromStrRadixErr;
 
     #[inline]
@@ -638,8 +599,7 @@ impl<T: Copy + Scalar + Num, const N: usize> Num for Hyperdual<T, N>
     }
 }
 
-impl<T: Copy + Scalar + Float, const N: usize> NumCast for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Float, const N: usize> NumCast for Hyperdual<T, N> {
     #[inline]
     fn from<P: ToPrimitive>(n: P) -> Option<Hyperdual<T, N>> {
         <T as NumCast>::from(n).map(Self::from_real)
@@ -654,8 +614,7 @@ macro_rules! impl_float_const {
     }
 }
 
-impl<T: Copy + Scalar + FloatConst + Zero, const N: usize> FloatConst for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + FloatConst + Zero, const N: usize> FloatConst for Hyperdual<T, N> {
     impl_float_const!(
         E,
         FRAC_1_PI,
@@ -724,29 +683,25 @@ macro_rules! impl_real_op {
     }
 }
 
-impl<T: Copy + Scalar + Num + Zero, const N: usize> Sum for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num + Zero, const N: usize> Sum for Hyperdual<T, N> {
     fn sum<I: Iterator<Item = Hyperdual<T, N>>>(iter: I) -> Hyperdual<T, N> {
         iter.fold(Hyperdual::zero(), |a, b| a + b)
     }
 }
 
-impl<'a, T: Copy + Scalar + Num + Zero, const N: usize> Sum<&'a Hyperdual<T, N>> for Hyperdual<T, N>
-{
+impl<'a, T: Copy + Scalar + Num + Zero, const N: usize> Sum<&'a Hyperdual<T, N>> for Hyperdual<T, N> {
     fn sum<I: Iterator<Item = &'a Hyperdual<T, N>>>(iter: I) -> Hyperdual<T, N> {
         iter.fold(Hyperdual::zero(), |a, b| a + *b)
     }
 }
 
-impl<T: Copy + Scalar + Num + One, const N: usize> Product for Hyperdual<T, N>
-{
+impl<T: Copy + Scalar + Num + One, const N: usize> Product for Hyperdual<T, N> {
     fn product<I: Iterator<Item = Hyperdual<T, N>>>(iter: I) -> Hyperdual<T, N> {
         iter.fold(Hyperdual::one(), |a, b| a * b)
     }
 }
 
-impl<'a, T: Copy + Scalar + Num + One, const N: usize> Product<&'a Hyperdual<T, N>> for Hyperdual<T, N>
-{
+impl<'a, T: Copy + Scalar + Num + One, const N: usize> Product<&'a Hyperdual<T, N>> for Hyperdual<T, N> {
     fn product<I: Iterator<Item = &'a Hyperdual<T, N>>>(iter: I) -> Hyperdual<T, N> {
         iter.fold(Hyperdual::one(), |a, b| a * *b)
     }
@@ -1056,8 +1011,7 @@ impl<T: Copy + Scalar> Dual<T> {
 
 pub type DualN<T, const N: usize> = Hyperdual<T, N>;
 
-pub fn hyperspace_from_vector<T: Copy + Scalar + Num + Zero, const D: usize, const N: usize>(v: &SVector<T, N>) -> SVector<Hyperdual<T, D>, N>
-{
+pub fn hyperspace_from_vector<T: Copy + Scalar + Num + Zero, const D: usize, const N: usize>(v: &SVector<T, N>) -> SVector<Hyperdual<T, D>, N> {
     let mut space_slice = vec![Hyperdual::<T, D>::zero(); N];
     for i in 0..N {
         space_slice[i] = Hyperdual::<T, D>::from_fn(|j| {
@@ -1073,9 +1027,8 @@ pub fn hyperspace_from_vector<T: Copy + Scalar + Num + Zero, const D: usize, con
     SVector::<Hyperdual<T, D>, N>::from_row_slice(&space_slice)
 }
 
-pub fn vector_from_hyperspace<T: Scalar + Zero + Float, const DimVector: usize, const DimHyper: usize>(
-    x_dual: &SVector<DualN<T, DimHyper>, {DimVector}>,
-) -> SVector<T, DimVector>
-{
+pub fn vector_from_hyperspace<T: Scalar + Zero + Float, const DIM_VECTOR: usize, const DIM_HYPER: usize>(
+    x_dual: &SVector<DualN<T, DIM_HYPER>, { DIM_VECTOR }>,
+) -> SVector<T, DIM_VECTOR> {
     x_dual.map(|x| x.real())
 }

@@ -1,7 +1,7 @@
 extern crate hyperdual;
 extern crate nalgebra as na;
 
-use na::{Const, Matrix2x6, Matrix6, SMatrix, SVector, Vector2, Vector3, Vector6};
+use na::{Matrix2x6, Matrix6, SMatrix, SVector, Vector2, Vector3, Vector6};
 
 use hyperdual::linalg::norm;
 use hyperdual::{
