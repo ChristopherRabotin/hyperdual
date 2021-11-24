@@ -44,10 +44,10 @@ extern crate nalgebra as na;
 extern crate num_traits;
 
 use std::cmp::Ordering;
-use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
+use std::fmt::{Debug, Display, Formatter, LowerExp, Result as FmtResult};
 use std::iter::{Product, Sum};
 use std::num::FpCategory;
-use std::ops::{Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Rem, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign};
 
 pub use num_traits::{Float, FloatConst, Num, One, Zero};
 
@@ -206,6 +206,19 @@ impl<T: Copy + Scalar + Display, const N: usize> Display for Hyperdual<T, N> {
         write!(f, "{:.p$}", self.real(), p = precision)?;
         for (i, x) in self.iter().skip(1).enumerate() {
             write!(f, " + {:.p$}\u{03B5}{}", x, i + 1, p = precision)?;
+        }
+
+        Ok(())
+    }
+}
+
+impl<T: Copy + Scalar + LowerExp, const N: usize> LowerExp for Hyperdual<T, N> {
+    fn fmt(&self, f: &mut Formatter) -> FmtResult {
+        let precision = f.precision().unwrap_or(4);
+
+        write!(f, "{:.p$e}", self.real(), p = precision)?;
+        for (i, x) in self.iter().skip(1).enumerate() {
+            write!(f, " + {:.p$e}\u{03B5}{}", x, i + 1, p = precision)?;
         }
 
         Ok(())
@@ -398,6 +411,15 @@ impl<T: Copy + Scalar + Num, const N: usize> Add<Self> for Hyperdual<T, N> {
     }
 }
 
+impl<T: Copy + Scalar + Num, const N: usize> Add<&Self> for Hyperdual<T, N> {
+    type Output = Self;
+
+    #[inline]
+    fn add(self, rhs: &Self) -> Self {
+        Hyperdual(self.zip_map(&rhs, |x, y| x + y))
+    }
+}
+
 impl<T: Copy + Scalar + Num, const N: usize> AddAssign<Self> for Hyperdual<T, N> {
     #[inline]
     fn add_assign(&mut self, rhs: Self) {
@@ -410,6 +432,15 @@ impl<T: Copy + Scalar + Num, const N: usize> Sub<Self> for Hyperdual<T, N> {
 
     #[inline]
     fn sub(self, rhs: Self) -> Self {
+        Hyperdual(self.zip_map(&rhs, |x, y| x - y))
+    }
+}
+
+impl<T: Copy + Scalar + Num, const N: usize> Sub<&Self> for Hyperdual<T, N> {
+    type Output = Self;
+
+    #[inline]
+    fn sub(self, rhs: &Self) -> Self {
         Hyperdual(self.zip_map(&rhs, |x, y| x - y))
     }
 }
@@ -427,6 +458,18 @@ impl<T: Copy + Scalar + Num, const N: usize> Mul<Self> for Hyperdual<T, N> {
     #[allow(clippy::suspicious_arithmetic_impl)]
     #[inline]
     fn mul(self, rhs: Self) -> Self {
+        let mut v = self.zip_map(&rhs, |x, y| rhs.real() * x + self.real() * y);
+        v[0] = self.real() * rhs.real();
+        Hyperdual(v)
+    }
+}
+
+impl<T: Copy + Scalar + Num, const N: usize> Mul<&Self> for Hyperdual<T, N> {
+    type Output = Self;
+
+    #[allow(clippy::suspicious_arithmetic_impl)]
+    #[inline]
+    fn mul(self, rhs: &Self) -> Self {
         let mut v = self.zip_map(&rhs, |x, y| rhs.real() * x + self.real() * y);
         v[0] = self.real() * rhs.real();
         Hyperdual(v)
@@ -483,6 +526,20 @@ impl<T: Copy + Scalar + Num, const N: usize> Div<Self> for Hyperdual<T, N> {
     }
 }
 
+impl<T: Copy + Scalar + Num, const N: usize> Div<&Self> for Hyperdual<T, N> {
+    type Output = Self;
+
+    #[inline]
+    #[allow(clippy::suspicious_arithmetic_impl)]
+    fn div(self, rhs: &Self) -> Self {
+        let d = rhs.real() * rhs.real();
+
+        let mut v = self.zip_map(&rhs, |x, y| (rhs.real() * x - self.real() * y) / d);
+        v[0] = self.real() / rhs.real();
+        Hyperdual(v)
+    }
+}
+
 impl<T: Copy + Scalar + Num, const N: usize> DivAssign<Self> for Hyperdual<T, N> {
     #[inline]
     fn div_assign(&mut self, rhs: Self) {
@@ -498,6 +555,20 @@ impl<T: Copy + Scalar + Num, const N: usize> Rem<Self> for Hyperdual<T, N> {
     /// As far as I know, remainder is not a valid operation on dual numbers,
     /// but is required for the `Float` trait to be implemented.
     fn rem(self, _: Self) -> Self {
+        unimplemented!()
+    }
+}
+
+impl<T: Copy + Scalar + Num, const N: usize> Rem<&Self> for Hyperdual<T, N> {
+    type Output = Self;
+
+    fn rem(self, _: &Self) -> Self {
+        unimplemented!()
+    }
+}
+
+impl<T: Copy + Scalar + Num, const N: usize> RemAssign<Self> for Hyperdual<T, N> {
+    fn rem_assign(&mut self, _: Self) {
         unimplemented!()
     }
 }
