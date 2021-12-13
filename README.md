@@ -26,6 +26,10 @@ fn main() {
 }
 ```
 
+## Change log
+### Version 0.5.2
++ Re-add support for nalgebra Owned Vectors for structures that do not yet support const generics.
+
 ##### Previous Work
 * [https://github.com/novacrazy/dual_num](https://github.com/novacrazy/dual_num)
 * [https://github.com/FreeFull/dual_numbers](https://github.com/FreeFull/dual_numbers)
