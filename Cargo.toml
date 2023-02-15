@@ -2,7 +2,7 @@
 name = "hyperdual"
 description = "Fully-featured Dual Number implementation with features for automatic differentiation of multivariate vectorial functions"
 authors = ["Aaron Trent <novacrazy@gmail.com>", "Christopher Rabotin <christopher.rabotin@gmail.com>"]
-version = "1.1.0"
+version = "1.2.0"
 license = "MIT"
 include = ["src/**/*", "Cargo.toml"]
 keywords = ["dual", "number", "hyperdual", "multidimentional", "autodifferentiate"]
@@ -12,4 +12,4 @@ repository = "https://gitlab.com/chrisrabotin/hyperdual"
 
 [dependencies]
 num-traits = "0.2"
-nalgebra = "0.31"
+nalgebra = "0.32"
