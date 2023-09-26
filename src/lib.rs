@@ -60,7 +60,7 @@ pub mod linalg;
 
 use num_traits::{FromPrimitive, Inv, MulAdd, MulAddAssign, NumCast, Pow, Signed, ToPrimitive, Unsigned};
 
-use na::{Const, OVector, SVector, Scalar};
+use na::{OVector, SVector, Scalar};
 
 // Re-export traits useful for construction and extension of duals
 pub use na::allocator::Allocator;
