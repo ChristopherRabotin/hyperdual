@@ -43,7 +43,7 @@ where
         + Allocator<T, DimHyper>,
     <DefaultAllocator as Allocator<T, DimHyper>>::Buffer: Copy,
 {
-    let fx = super::ovector_from_hyperspace(&fx_dual);
+    let fx = super::ovector_from_hyperspace(fx_dual);
     let mut grad = OMatrix::<T, DimOut, DimIn>::zeros();
 
     for i in 0..DimOut::dim() {
