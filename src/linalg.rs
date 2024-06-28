@@ -21,8 +21,8 @@ where
 pub fn norm_owned<T: Scalar + Float, M: DimName, N: DimName>(v: &OVector<OHyperdual<T, N>, M>) -> OHyperdual<T, N>
 where
     OHyperdual<T, N>: Float,
-    DefaultAllocator: Allocator<OHyperdual<T, N>, M> + Allocator<T, N>,
-    <DefaultAllocator as Allocator<T, N>>::Buffer: Copy,
+    DefaultAllocator: Allocator<M> + Allocator<N>,
+    <DefaultAllocator as Allocator<N>>::Buffer<T>: Copy,
 {
     let mut val = OHyperdual::<T, N>::zero();
 

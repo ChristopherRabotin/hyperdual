@@ -60,7 +60,7 @@ pub mod linalg;
 
 use num_traits::{FromPrimitive, Inv, MulAdd, MulAddAssign, NumCast, Pow, Signed, ToPrimitive, Unsigned};
 
-use na::{Const, OVector, SVector, Scalar};
+use na::{OVector, SVector, Scalar};
 
 // Re-export traits useful for construction and extension of duals
 pub use na::allocator::Allocator;
@@ -79,14 +79,14 @@ pub use na::{DefaultAllocator, Dim, DimName};
 #[derive(Clone, Copy)]
 pub struct OHyperdual<T: Copy + Scalar, N: Dim + DimName>(OVector<T, N>)
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy;
 
 pub type Hyperdual<T, const N: usize> = OHyperdual<T, Const<N>>;
 
 impl<T: Copy + Scalar, N: Dim + DimName> OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     /// Create a new dual number from its real and dual parts.
@@ -148,7 +148,7 @@ where
 
 impl<T: Copy + Scalar, N: Dim + DimName> Debug for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
@@ -162,7 +162,7 @@ where
 
 impl<T: Copy + Scalar + Num + Zero, N: Dim + DimName> Default for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -173,7 +173,7 @@ where
 
 impl<T: Copy + Scalar + Zero, N: Dim + DimName> From<T> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -184,7 +184,7 @@ where
 
 impl<T: Copy + Scalar, N: Dim + DimName> Deref for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Target = OVector<T, N>;
@@ -197,7 +197,7 @@ where
 
 impl<T: Copy + Scalar, N: Dim + DimName> DerefMut for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -208,7 +208,7 @@ where
 
 impl<T: Copy + Scalar, N: Dim + DimName> AsRef<OVector<T, N>> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -219,7 +219,7 @@ where
 
 impl<T: Copy + Scalar, N: Dim + DimName> AsMut<OVector<T, N>> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -230,7 +230,7 @@ where
 
 impl<T: Copy + Scalar + Neg<Output = T>, N: Dim + DimName> OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     /// Returns the conjugate of the dual number.
@@ -242,7 +242,7 @@ where
 
 impl<T: Copy + Scalar + Display, N: Dim + DimName> Display for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
@@ -259,7 +259,7 @@ where
 
 impl<T: Copy + Scalar + LowerExp, N: Dim + DimName> LowerExp for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
@@ -276,7 +276,7 @@ where
 
 impl<T: Copy + Scalar + PartialEq, N: Dim + DimName> PartialEq<Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -287,7 +287,7 @@ where
 
 impl<T: Copy + Scalar + PartialOrd, N: Dim + DimName> PartialOrd<Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -308,7 +308,7 @@ where
 
 impl<T: Copy + Scalar + PartialEq, N: Dim + DimName> PartialEq<T> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -319,7 +319,7 @@ where
 
 impl<T: Copy + Scalar + PartialOrd, N: Dim + DimName> PartialOrd<T> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -342,7 +342,7 @@ macro_rules! impl_to_primitive {
     ($($name:ident, $ty:ty),*) => {
         impl<T: Copy + Scalar + ToPrimitive, N: Dim + DimName> ToPrimitive for OHyperdual<T, N>
         where
-            DefaultAllocator: Allocator<T, N>,
+            DefaultAllocator: Allocator<N>,
             Owned<T, N>: Copy,
 
 {
@@ -361,7 +361,7 @@ macro_rules! impl_from_primitive {
         impl<T: Copy + Scalar + FromPrimitive, N: Dim + DimName> FromPrimitive for OHyperdual<T, N>
             where
                 T: Zero,
-                DefaultAllocator: Allocator<T, N>,
+                DefaultAllocator: Allocator<N>,
                 Owned<T, N>: Copy,
         {
             $(
@@ -398,7 +398,7 @@ impl_primitive_cast! {
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Add<T> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = OHyperdual<T, N>;
@@ -413,7 +413,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> AddAssign<T> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -424,7 +424,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Sub<T> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = OHyperdual<T, N>;
@@ -439,7 +439,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> SubAssign<T> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -450,7 +450,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Mul<T> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = OHyperdual<T, N>;
@@ -463,7 +463,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> MulAssign<T> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -474,7 +474,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Div<T> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = OHyperdual<T, N>;
@@ -487,7 +487,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> DivAssign<T> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -498,7 +498,7 @@ where
 
 impl<T: Copy + Scalar + Signed, N: Dim + DimName> Neg for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -511,7 +511,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Add<Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -524,7 +524,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Add<&Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -537,7 +537,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> AddAssign<Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -548,7 +548,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Sub<Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -561,7 +561,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Sub<&Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -574,7 +574,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> SubAssign<Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -585,7 +585,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Mul<Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -601,7 +601,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Mul<&Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -617,7 +617,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> MulAssign<Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -631,7 +631,7 @@ macro_rules! impl_mul_add {
         $(
             impl<T: Copy + Scalar + Num + Mul + Add, N: Dim + DimName> MulAdd<$a, $b> for OHyperdual<T,N>
             where
-                DefaultAllocator: Allocator<T, N>,
+                DefaultAllocator: Allocator<N>,
                 Owned<T, N>: Copy,
             {
                 type Output = OHyperdual<T,N>;
@@ -644,7 +644,7 @@ macro_rules! impl_mul_add {
 
             impl<T: Copy + Scalar + Num + Mul + Add, N: Dim + DimName> MulAddAssign<$a, $b> for OHyperdual<T,N>
             where
-                DefaultAllocator: Allocator<T, N>,
+                DefaultAllocator: Allocator<N>,
                 Owned<T, N>: Copy,
             {
                 #[inline]
@@ -665,7 +665,7 @@ impl_mul_add! {
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Div<Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -683,7 +683,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Div<&Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -701,7 +701,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> DivAssign<Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -712,7 +712,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Rem<Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -728,7 +728,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Rem<&Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -740,7 +740,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> RemAssign<Self> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     fn rem_assign(&mut self, _: Self) {
@@ -751,7 +751,7 @@ where
 impl<T: Copy + Scalar, P: Into<OHyperdual<T, N>>, N: Dim + DimName> Pow<P> for OHyperdual<T, N>
 where
     OHyperdual<T, N>: Float,
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -765,7 +765,7 @@ where
 impl<T: Copy + Scalar, N: Dim + DimName> Inv for OHyperdual<T, N>
 where
     Self: One + Div<Output = Self>,
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type Output = Self;
@@ -779,7 +779,7 @@ where
 impl<T: Copy + Scalar, N: Dim + DimName> Signed for OHyperdual<T, N>
 where
     T: Signed + PartialOrd,
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -816,14 +816,14 @@ where
 impl<T: Copy + Scalar + Unsigned, N: Dim + DimName> Unsigned for OHyperdual<T, N>
 where
     Self: Num,
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
 }
 
 impl<T: Copy + Scalar + Num + Zero, N: Dim + DimName> Zero for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -839,7 +839,7 @@ where
 
 impl<T: Copy + Scalar + Num + One, N: Dim + DimName> One for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -858,7 +858,7 @@ where
 
 impl<T: Copy + Scalar + Num, N: Dim + DimName> Num for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     type FromStrRadixErr = <T as Num>::FromStrRadixErr;
@@ -871,7 +871,7 @@ where
 
 impl<T: Copy + Scalar + Float, N: Dim + DimName> NumCast for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     #[inline]
@@ -890,7 +890,7 @@ macro_rules! impl_float_const {
 
 impl<T: Copy + Scalar + FloatConst + Zero, N: Dim + DimName> FloatConst for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     impl_float_const!(
@@ -963,7 +963,7 @@ macro_rules! impl_real_op {
 
 impl<T: Copy + Scalar + Num + Zero, N: Dim + DimName> Sum for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     fn sum<I: Iterator<Item = OHyperdual<T, N>>>(iter: I) -> Self {
@@ -973,7 +973,7 @@ where
 
 impl<'a, T: Copy + Scalar + Num + Zero, N: Dim + DimName> Sum<&'a OHyperdual<T, N>> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     fn sum<I: Iterator<Item = &'a OHyperdual<T, N>>>(iter: I) -> Self {
@@ -983,7 +983,7 @@ where
 
 impl<T: Copy + Scalar + Num + One, N: Dim + DimName> Product for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     fn product<I: Iterator<Item = OHyperdual<T, N>>>(iter: I) -> Self {
@@ -993,7 +993,7 @@ where
 
 impl<'a, T: Copy + Scalar + Num + One, N: Dim + DimName> Product<&'a OHyperdual<T, N>> for OHyperdual<T, N>
 where
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     fn product<I: Iterator<Item = &'a OHyperdual<T, N>>>(iter: I) -> Self {
@@ -1004,7 +1004,7 @@ where
 impl<T: Copy + Scalar, N: Dim + DimName> Float for OHyperdual<T, N>
 where
     T: Float + Signed + FloatConst,
-    DefaultAllocator: Allocator<T, N>,
+    DefaultAllocator: Allocator<N>,
     Owned<T, N>: Copy,
 {
     impl_real_constant!(nan, infinity, neg_infinity, neg_zero, min_positive_value, epsilon, min_value, max_value);
@@ -1331,7 +1331,7 @@ pub fn vector_from_hyperspace<T: Scalar + Zero + Float, const DIM_VECTOR: usize,
 
 pub fn hyperspace_from_ovector<T: Copy + Scalar + Num + Zero, D: Dim + DimName, N: Dim + DimName>(v: &OVector<T, N>) -> OVector<OHyperdual<T, D>, N>
 where
-    DefaultAllocator: Allocator<T, D> + Allocator<T, N> + Allocator<OHyperdual<T, D>, N>,
+    DefaultAllocator: Allocator<D> + Allocator<N>,
     Owned<T, D>: Copy,
 {
     let mut space_slice = vec![OHyperdual::<T, D>::zero(); N::dim()];
@@ -1353,8 +1353,8 @@ pub fn ovector_from_hyperspace<T: Scalar + Zero + Float, DimVector: Dim + DimNam
     x_dual: &OVector<OHyperdual<T, DimHyper>, DimVector>,
 ) -> OVector<T, DimVector>
 where
-    DefaultAllocator: Allocator<T, DimVector> + Allocator<OHyperdual<T, DimHyper>, DimVector> + Allocator<T, DimHyper>,
-    <DefaultAllocator as Allocator<T, DimHyper>>::Buffer: Copy,
+    DefaultAllocator: Allocator<DimVector> + Allocator<DimVector> + Allocator<DimHyper>,
+    <DefaultAllocator as Allocator<DimHyper>>::Buffer<T>: Copy,
 {
     x_dual.map(|x| x.real())
 }

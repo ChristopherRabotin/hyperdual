@@ -36,14 +36,10 @@ pub fn extract_jacobian_and_result_owned<T: Scalar + Zero + Float, DimIn: Dim + 
     fx_dual: &OVector<OHyperdual<T, DimHyper>, DimOut>,
 ) -> (OVector<T, DimOut>, OMatrix<T, DimOut, DimIn>)
 where
-    DefaultAllocator: Allocator<T, DimIn>
-        + Allocator<T, DimOut>
-        + Allocator<T, DimOut, DimIn>
-        + Allocator<OHyperdual<T, DimHyper>, DimOut>
-        + Allocator<T, DimHyper>,
-    <DefaultAllocator as Allocator<T, DimHyper>>::Buffer: Copy,
+    DefaultAllocator: Allocator<DimIn> + Allocator<DimOut> + Allocator<DimOut, DimIn> + Allocator<DimOut> + Allocator<DimHyper>,
+    <DefaultAllocator as Allocator<DimHyper>>::Buffer<T>: Copy,
 {
-    let fx = super::ovector_from_hyperspace(&fx_dual);
+    let fx = super::ovector_from_hyperspace(fx_dual);
     let mut grad = OMatrix::<T, DimOut, DimIn>::zeros();
 
     for i in 0..DimOut::dim() {

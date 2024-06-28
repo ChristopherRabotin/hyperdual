@@ -140,12 +140,12 @@ fn linalg() {
         zero_within!(
             (expected - computed)[(i, 0)].real(),
             1e-16,
-            format!("Vector2 multiplication incorrect (i={})", i)
+            format!("Vector2 multiplication incorrect (i={i})")
         );
         zero_within!(
             (expected - computed)[(i, 0)].dual(),
             1e-16,
-            format!("Vector2 multiplication incorrect (i={})", i)
+            format!("Vector2 multiplication incorrect (i={i})")
         );
     }
 
