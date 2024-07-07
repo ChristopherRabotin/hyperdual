@@ -17,7 +17,7 @@ keywords = [
 ]
 readme = "README.md"
 documentation = "https://docs.rs/hyperdual/"
-repository = "https://gitlab.com/chrisrabotin/hyperdual"
+repository = "https://github.com/christopherrabotin/hyperdual"
 
 [dependencies]
 num-traits = "0.2"
