@@ -1,5 +1,6 @@
 [package]
 name = "hyperdual"
+edition = "2021"
 description = "Fully-featured Dual Number implementation with features for automatic differentiation of multivariate vectorial functions"
 authors = [
     "Aaron Trent <novacrazy@gmail.com>",
