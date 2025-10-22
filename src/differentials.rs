@@ -1,9 +1,9 @@
 use crate::OHyperdual;
 
 use super::Float;
+use crate::{Dual, DualN, One, Scalar, Zero};
 use na::{allocator::Allocator, DefaultAllocator};
 use na::{Dim, DimName, OMatrix, OVector, SMatrix, SVector};
-use {Dual, DualN, One, Scalar, Zero};
 
 /// Evaluates the function using dual numbers to get the partial derivative at the input point
 #[inline]

@@ -1,7 +1,7 @@
 use na::allocator::Allocator;
 use na::{DefaultAllocator, DimName, OVector, SVector, Scalar};
 
-use {Float, Hyperdual, OHyperdual, Zero};
+use crate::{Float, Hyperdual, OHyperdual, Zero};
 
 /// Computes the norm of a vector of Hyperdual.
 pub fn norm<T: Scalar + Float, const M: usize, const N: usize>(v: &SVector<Hyperdual<T, N>, M>) -> Hyperdual<T, N>

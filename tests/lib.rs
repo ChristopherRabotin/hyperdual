@@ -37,7 +37,7 @@ fn derive() {
     abs_within!(
         differentiate(4.0f64, |x| x.sqrt() + Dual::from_real(1.0)),
         1.0 / 4.0,
-        std::f64::EPSILON,
+        f64::EPSILON,
         "incorrect norm"
     );
 
@@ -60,65 +60,65 @@ fn derive() {
     assert_eq!(x.dual(), 5i32, "incorrect real");
 
     let c = Dual::new(1.0 / 2f64.sqrt(), 1.0).asin();
-    abs_within!(c.dual(), std::f64::consts::SQRT_2, std::f64::EPSILON, "incorrect d/dx arcsin");
+    abs_within!(c.dual(), std::f64::consts::SQRT_2, f64::EPSILON, "incorrect d/dx arcsin");
 
     let c = Dual::new(1.0 / 2f64.sqrt(), 1.0).acos();
-    abs_within!(c.dual(), -std::f64::consts::SQRT_2, std::f64::EPSILON, "incorrect d/dx arccos");
+    abs_within!(c.dual(), -std::f64::consts::SQRT_2, f64::EPSILON, "incorrect d/dx arccos");
 
     let c = Dual::new(1.0 / 2f64.sqrt(), 1.0).atan();
-    abs_within!(c.dual(), 2.0f64 / 3.0f64, std::f64::EPSILON, "incorrect d/dx arctan");
+    abs_within!(c.dual(), 2.0f64 / 3.0f64, f64::EPSILON, "incorrect d/dx arctan");
 }
 
 #[test]
 fn type_operations() {
     let mut x = Dual::new(1.0, 2.0);
     let val = 3.0f64;
-    abs_within!((x + val).real(), 4.0, std::f64::EPSILON, "add failed on real part");
-    abs_within!((x + val).dual(), 2.0, std::f64::EPSILON, "add failed on dual part");
+    abs_within!((x + val).real(), 4.0, f64::EPSILON, "add failed on real part");
+    abs_within!((x + val).dual(), 2.0, f64::EPSILON, "add failed on dual part");
     x += val;
-    abs_within!(x.real(), 4.0, std::f64::EPSILON, "add_assign failed on real part");
-    abs_within!(x.dual(), 2.0, std::f64::EPSILON, "add_assign failed on dual part");
-    abs_within!((x - val).real(), 1.0, std::f64::EPSILON, "sub failed on real part");
-    abs_within!((x - val).dual(), 2.0, std::f64::EPSILON, "sub failed on dual part");
+    abs_within!(x.real(), 4.0, f64::EPSILON, "add_assign failed on real part");
+    abs_within!(x.dual(), 2.0, f64::EPSILON, "add_assign failed on dual part");
+    abs_within!((x - val).real(), 1.0, f64::EPSILON, "sub failed on real part");
+    abs_within!((x - val).dual(), 2.0, f64::EPSILON, "sub failed on dual part");
     x -= val;
-    abs_within!(x.real(), 1.0, std::f64::EPSILON, "sub_assign failed on real part");
-    abs_within!(x.dual(), 2.0, std::f64::EPSILON, "sub_assign failed on dual part");
-    abs_within!((x * val).real(), 3.0, std::f64::EPSILON, "mul failed on real part");
-    abs_within!((x * val).dual(), 6.0, std::f64::EPSILON, "mul failed on dual part");
+    abs_within!(x.real(), 1.0, f64::EPSILON, "sub_assign failed on real part");
+    abs_within!(x.dual(), 2.0, f64::EPSILON, "sub_assign failed on dual part");
+    abs_within!((x * val).real(), 3.0, f64::EPSILON, "mul failed on real part");
+    abs_within!((x * val).dual(), 6.0, f64::EPSILON, "mul failed on dual part");
     x *= val;
-    abs_within!(x.real(), 3.0, std::f64::EPSILON, "mul_assign failed on real part");
-    abs_within!(x.dual(), 6.0, std::f64::EPSILON, "mul_assign failed on dual part");
-    abs_within!((x / val).real(), 1.0, std::f64::EPSILON, "div failed on real part");
-    abs_within!((x / val).dual(), 2.0, std::f64::EPSILON, "div failed on dual part");
+    abs_within!(x.real(), 3.0, f64::EPSILON, "mul_assign failed on real part");
+    abs_within!(x.dual(), 6.0, f64::EPSILON, "mul_assign failed on dual part");
+    abs_within!((x / val).real(), 1.0, f64::EPSILON, "div failed on real part");
+    abs_within!((x / val).dual(), 2.0, f64::EPSILON, "div failed on dual part");
     x /= val;
-    abs_within!(x.real(), 1.0, std::f64::EPSILON, "div_assign failed on real part");
-    abs_within!(x.dual(), 2.0, std::f64::EPSILON, "div_assign failed on dual part");
+    abs_within!(x.real(), 1.0, f64::EPSILON, "div_assign failed on real part");
+    abs_within!(x.dual(), 2.0, f64::EPSILON, "div_assign failed on dual part");
 }
 
 #[test]
 fn dual_operations() {
     let mut x = Dual::new(1.0, 2.0);
     let y = Dual::new(3.0, 4.0);
-    abs_within!((x + y).real(), 4.0, std::f64::EPSILON, "add failed");
-    abs_within!((x + y).dual(), 6.0, std::f64::EPSILON, "add failed");
+    abs_within!((x + y).real(), 4.0, f64::EPSILON, "add failed");
+    abs_within!((x + y).dual(), 6.0, f64::EPSILON, "add failed");
     x += y;
-    abs_within!(x.real(), 4.0, std::f64::EPSILON, "add_assign failed");
-    abs_within!(x.dual(), 6.0, std::f64::EPSILON, "add_assign failed");
-    abs_within!((x - y).real(), 1.0, std::f64::EPSILON, "sub failed");
-    abs_within!((x - y).dual(), 2.0, std::f64::EPSILON, "sub failed");
+    abs_within!(x.real(), 4.0, f64::EPSILON, "add_assign failed");
+    abs_within!(x.dual(), 6.0, f64::EPSILON, "add_assign failed");
+    abs_within!((x - y).real(), 1.0, f64::EPSILON, "sub failed");
+    abs_within!((x - y).dual(), 2.0, f64::EPSILON, "sub failed");
     x -= y;
-    abs_within!(x.real(), 1.0, std::f64::EPSILON, "sub_assign failed");
-    abs_within!(x.dual(), 2.0, std::f64::EPSILON, "sub_assign failed");
-    abs_within!((x * y).real(), 3.0, std::f64::EPSILON, "mul failed");
-    abs_within!((x * y).dual(), 10.0, std::f64::EPSILON, "mul failed");
+    abs_within!(x.real(), 1.0, f64::EPSILON, "sub_assign failed");
+    abs_within!(x.dual(), 2.0, f64::EPSILON, "sub_assign failed");
+    abs_within!((x * y).real(), 3.0, f64::EPSILON, "mul failed");
+    abs_within!((x * y).dual(), 10.0, f64::EPSILON, "mul failed");
     x *= y;
-    abs_within!(x.real(), 3.0, std::f64::EPSILON, "mul_assign failed");
-    abs_within!(x.dual(), 10.0, std::f64::EPSILON, "mul_assign failed");
-    abs_within!((x / y).real(), 1.0, std::f64::EPSILON, "div failed");
-    abs_within!((x / y).dual(), 2.0, std::f64::EPSILON, "div failed");
+    abs_within!(x.real(), 3.0, f64::EPSILON, "mul_assign failed");
+    abs_within!(x.dual(), 10.0, f64::EPSILON, "mul_assign failed");
+    abs_within!((x / y).real(), 1.0, f64::EPSILON, "div failed");
+    abs_within!((x / y).dual(), 2.0, f64::EPSILON, "div failed");
     x /= y;
-    abs_within!(x.real(), 1.0, std::f64::EPSILON, "div_assign failed");
-    abs_within!(x.dual(), 2.0, std::f64::EPSILON, "div_assign failed");
+    abs_within!(x.real(), 1.0, f64::EPSILON, "div_assign failed");
+    abs_within!(x.dual(), 2.0, f64::EPSILON, "div_assign failed");
 }
 
 #[test]
@@ -137,16 +137,8 @@ fn linalg() {
     let expected = Vector2::new(Dual::new(2.0f64, 0.5f64), Dual::new(-4.0f64, 6.0f64));
 
     for i in 0..2 {
-        zero_within!(
-            (expected - computed)[(i, 0)].real(),
-            1e-16,
-            format!("Vector2 multiplication incorrect (i={i})")
-        );
-        zero_within!(
-            (expected - computed)[(i, 0)].dual(),
-            1e-16,
-            format!("Vector2 multiplication incorrect (i={i})")
-        );
+        zero_within!((expected - computed)[(i, 0)].real(), 1e-16, "Vector2 multiplication incorrect (i={i})");
+        zero_within!((expected - computed)[(i, 0)].dual(), 1e-16, "Vector2 multiplication incorrect (i={i})");
     }
 
     // Checking the dot product
@@ -157,8 +149,8 @@ fn linalg() {
 
     let vec = Vector3::new(Dual::from_real(1.0), Dual::from_real(1.0), Dual::from_real(1.0));
     let this_norm = norm(&vec);
-    abs_within!(this_norm.real(), 3.0f64.sqrt(), std::f64::EPSILON, "incorrect real part of the norm");
-    zero_within!(this_norm.dual(), std::f64::EPSILON, "incorrect dual part of the norm");
+    abs_within!(this_norm.real(), 3.0f64.sqrt(), f64::EPSILON, "incorrect real part of the norm");
+    zero_within!(this_norm.dual(), f64::EPSILON, "incorrect dual part of the norm");
 }
 
 #[test]
@@ -194,8 +186,8 @@ fn state_gradient() {
         let body_acceleration = radius * (Hyperdual::<f64, 7>::from_real(-398_600.441_5) / rmag.powi(3));
 
         // Added for inspection only
-        println!("velocity = {}", velocity);
-        println!("body_acceleration = {}", body_acceleration);
+        println!("velocity = {velocity}");
+        println!("body_acceleration = {body_acceleration}");
 
         // Return only the EOMs
         Vector6::new(
@@ -208,7 +200,7 @@ fn state_gradient() {
         )
     }
     fn eom_with_grad(eom: &EomFn<StateVectorDualType>, _t: f64, state: &StateVectorDualType) -> (StateVectorType, JacobianType) {
-        let f_dual = eom(0.0, &state);
+        let f_dual = eom(0.0, state);
         // Extract result into Vector6 and Matrix6
         extract_jacobian_and_result(&f_dual)
     }
@@ -226,7 +218,7 @@ fn state_gradient() {
     let hyperstate = hyperspace_from_vector(&state);
 
     // Added for inspection
-    println!("hyperstate = {}", hyperstate);
+    println!("hyperstate = {hyperstate}");
 
     // Extract result into Vector6 and Matrix6
     let (fx, grad) = eom_with_grad(&(eom as EomFn<StateVectorDualType>), 0.0, &hyperstate);
@@ -284,7 +276,7 @@ fn state_partials() {
     }
 
     fn sensitivity_with_partials(eom: &SensitivityFn, state: &StateVectorDualType) -> (OutputVectorType, JacobianType) {
-        let f_dual = eom(&state);
+        let f_dual = eom(state);
         extract_jacobian_and_result(&f_dual)
     }
 
@@ -300,16 +292,12 @@ fn state_partials() {
     let hyperstate = hyperspace_from_vector(&vec);
 
     // Added for inspection
-    println!("hyperstate = {}", hyperstate);
+    println!("hyperstate = {hyperstate}");
     let (fx, dfdx) = sensitivity_with_partials(&(sensitivity as SensitivityFn), &hyperstate);
 
     let expected_fx = Vector2::new(18831.82547853717, 0.2538107291309079);
-
-    zero_within!(
-        (fx - expected_fx).norm(),
-        1e-20,
-        format!("f(x) computation is incorrect -- here comes the delta: {}", fx - expected_fx)
-    );
+    let err = fx - expected_fx;
+    zero_within!(err.norm(), 1e-20, "f(x) computation is incorrect -- here comes the delta: {err}");
 
     let mut expected_dfdx = Matrix2x6::zeros();
     expected_dfdx[(0, 0)] = 0.231_239_052_656_896_62;
@@ -322,11 +310,9 @@ fn state_partials() {
     expected_dfdx[(1, 4)] = 0.960_618_044_570_246_1;
     expected_dfdx[(1, 5)] = 0.154_082_682_259_81;
 
-    zero_within!(
-        (dfdx - expected_dfdx).norm(),
-        1e-20,
-        format!("partial computation is incorrect -- here comes the delta: {}", dfdx - expected_dfdx)
-    );
+    let err = dfdx - expected_dfdx;
+
+    zero_within!(err.norm(), 1e-20, "partial computation is incorrect -- here comes the delta: {err}");
 }
 
 #[test]
@@ -343,10 +329,10 @@ fn test_hyperspace_from_vector() {
     let hyperstate: SVector<DualN<f64, 7>, 6> = hyperspace_from_vector(&vec);
 
     for i in 0..6 {
-        abs_within!(hyperstate[i].real(), vec[i], std::f64::EPSILON, "incorrect real value");
+        abs_within!(hyperstate[i].real(), vec[i], f64::EPSILON, "incorrect real value");
         for j in 1..7 {
             let expected = if j == i + 1 { 1.0 } else { 0.0 };
-            abs_within!(hyperstate[i][j], expected, std::f64::EPSILON, "incorrect partial");
+            abs_within!(hyperstate[i][j], expected, f64::EPSILON, "incorrect partial");
         }
     }
 }
@@ -372,11 +358,8 @@ fn test_vector_from_hyperspace() {
 
     let vector = vector_from_hyperspace(&dual_vec);
 
-    zero_within!(
-        (vector - expected_vec).norm(),
-        std::f64::EPSILON,
-        format!("vector_from_hyperspace test failed, norm: {}", vector - expected_vec)
-    );
+    let err = vector - expected_vec;
+    zero_within!(err.norm(), f64::EPSILON, "vector_from_hyperspace test failed, norm: {err}");
 }
 
 #[test]
@@ -386,9 +369,9 @@ fn test_hypot() {
     let dist1 = (x * x + y * y).sqrt();
     let dist2 = x.hypot(y);
 
-    abs_within!(dist1, dist2, std::f64::EPSILON, "incorrect hypot reals");
-    abs_within!(dist1[1], dist2[1], std::f64::EPSILON, "incorrect hypot df/dx");
-    abs_within!(dist1[2], dist2[2], std::f64::EPSILON, "incorrect hypot df/dy");
+    abs_within!(dist1, dist2, f64::EPSILON, "incorrect hypot reals");
+    abs_within!(dist1[1], dist2[1], f64::EPSILON, "incorrect hypot df/dx");
+    abs_within!(dist1[2], dist2[2], f64::EPSILON, "incorrect hypot df/dy");
 }
 
 #[test]
@@ -398,9 +381,9 @@ fn test_div() {
     let rslt = x / y;
     let expt: Hyperdual<f64, 3> = Hyperdual::from_slice(&[3.0 / 4.0, 1.0 / 4.0, -3.0 / 16.0]);
 
-    abs_within!(rslt, expt, std::f64::EPSILON, "incorrect reals");
-    abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
-    abs_within!(rslt[2], expt[2], std::f64::EPSILON, "incorrect df/dy");
+    abs_within!(rslt, expt, f64::EPSILON, "incorrect reals");
+    abs_within!(rslt[1], expt[1], f64::EPSILON, "incorrect df/dx");
+    abs_within!(rslt[2], expt[2], f64::EPSILON, "incorrect df/dy");
 }
 
 #[test]
@@ -410,8 +393,8 @@ fn test_powf() {
     let rslt = x.powf(y);
     let expt: Hyperdual<f64, 2> = Hyperdual::from_slice(&[12.513502532843182, 9.593685275179771]);
 
-    abs_within!(rslt, expt, std::f64::EPSILON, "incorrect reals");
-    abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
+    abs_within!(rslt, expt, f64::EPSILON, "incorrect reals");
+    abs_within!(rslt[1], expt[1], f64::EPSILON, "incorrect df/dx");
 }
 
 #[test]
@@ -437,15 +420,15 @@ fn test_trig_atan2() {
     let rslt_atan = (y / x).atan();
     let expt: Hyperdual<f64, 3> = Hyperdual::from_slice(&[0.5880026035475675, 0.23076923076923075, -0.15384615384615383]);
 
-    abs_within!(dbg!(rslt), dbg!(expt), std::f64::EPSILON, "incorrect reals");
-    abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
-    abs_within!(rslt[2], expt[2], std::f64::EPSILON, "incorrect df/dy");
-    abs_within!(dbg!(rslt[0].tan()), 2.0 / 3.0, std::f64::EPSILON, "incorrect inverse function");
+    abs_within!(dbg!(rslt), dbg!(expt), f64::EPSILON, "incorrect reals");
+    abs_within!(rslt[1], expt[1], f64::EPSILON, "incorrect df/dx");
+    abs_within!(rslt[2], expt[2], f64::EPSILON, "incorrect df/dy");
+    abs_within!(dbg!(rslt[0].tan()), 2.0 / 3.0, f64::EPSILON, "incorrect inverse function");
 
-    abs_within!(dbg!(rslt_atan), dbg!(expt), std::f64::EPSILON, "incorrect reals");
-    abs_within!(rslt_atan[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
-    abs_within!(rslt_atan[2], expt[2], std::f64::EPSILON, "incorrect df/dy");
-    abs_within!(dbg!(rslt_atan[0].tan()), 2.0 / 3.0, std::f64::EPSILON, "incorrect inverse function");
+    abs_within!(dbg!(rslt_atan), dbg!(expt), f64::EPSILON, "incorrect reals");
+    abs_within!(rslt_atan[1], expt[1], f64::EPSILON, "incorrect df/dx");
+    abs_within!(rslt_atan[2], expt[2], f64::EPSILON, "incorrect df/dy");
+    abs_within!(dbg!(rslt_atan[0].tan()), 2.0 / 3.0, f64::EPSILON, "incorrect inverse function");
 }
 
 #[test]
@@ -464,14 +447,14 @@ fn test_trig_acos() {
     let rslt = x.acos();
     let expt: Hyperdual<f64, 2> = Hyperdual::from_slice(&[0.9397374860168752, -1.238538495133269]);
 
-    abs_within!(dbg!(rslt), dbg!(expt), std::f64::EPSILON, "incorrect reals");
-    abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
-    abs_within!(rslt[0].cos(), 0.59, std::f64::EPSILON, "incorrect inverse function");
+    abs_within!(dbg!(rslt), dbg!(expt), f64::EPSILON, "incorrect reals");
+    abs_within!(rslt[1], expt[1], f64::EPSILON, "incorrect df/dx");
+    abs_within!(rslt[0].cos(), 0.59, f64::EPSILON, "incorrect inverse function");
 
     let rslt_deg = rslt.to_degrees();
-    abs_within!(rslt_deg[0], rslt[0].to_degrees(), std::f64::EPSILON, "incorrect to_degrees");
-    abs_within!(rslt_deg[1], rslt[1].to_degrees(), std::f64::EPSILON, "incorrect to_degrees for dual");
-    abs_within!(rslt_deg.to_radians(), rslt, std::f64::EPSILON, "incorrect return conversion");
+    abs_within!(rslt_deg[0], rslt[0].to_degrees(), f64::EPSILON, "incorrect to_degrees");
+    abs_within!(rslt_deg[1], rslt[1].to_degrees(), f64::EPSILON, "incorrect to_degrees for dual");
+    abs_within!(rslt_deg.to_radians(), rslt, f64::EPSILON, "incorrect return conversion");
 }
 
 #[test]
@@ -490,7 +473,7 @@ fn test_trig_asin() {
     let rslt = x.asin();
     let expt: Hyperdual<f64, 2> = Hyperdual::from_slice(&[0.6310588407780213, 1.238538495133269]);
 
-    abs_within!(dbg!(rslt), dbg!(expt), std::f64::EPSILON, "incorrect reals");
-    abs_within!(rslt[1], expt[1], std::f64::EPSILON, "incorrect df/dx");
-    abs_within!(rslt[0].sin(), 0.59, std::f64::EPSILON, "incorrect inverse function");
+    abs_within!(dbg!(rslt), dbg!(expt), f64::EPSILON, "incorrect reals");
+    abs_within!(rslt[1], expt[1], f64::EPSILON, "incorrect df/dx");
+    abs_within!(rslt[0].sin(), 0.59, f64::EPSILON, "incorrect inverse function");
 }
